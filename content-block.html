@@ -1,0 +1,23 @@
+<html lang="en">
+    <head>
+        <title>Content Blocks</title>
+    </head>
+    <body>
+        <h1>Content Blocks</h1>
+        <article id="contentBlock">
+            <h2 id="contentBlockTitle">Sample Title</h2>
+            <p id="contentBlockContent">Sample content goes here</p>
+        </article>
+        <button>Add to Notebook</button>
+        <button>Acknowledge</button>
+    </body>
+    <script>
+        const contentBlock = {
+            title: "How to honk at a dog",
+            content: "Dogs are often used for honking practice. In this lesson, you'll learn all the details about proper dog honking-at."
+        };
+
+        document.getElementById("contentBlockTitle").innerHTML = contentBlock.title;
+        document.getElementById("contentBlockContent").innerHTML = contentBlock.content;
+    </script>
+</html>

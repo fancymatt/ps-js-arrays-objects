@@ -1,23 +1,29 @@
 <html lang="en">
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Content Blocks</title>
+        <link rel="stylesheet" href="reset.css">
+        <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <h1>Content Blocks</h1>
-        <article id="contentBlock">
-            <h2 id="contentBlockTitle">Sample Title</h2>
-            <p id="contentBlockContent">Sample content goes here</p>
-        </article>
-        <button>Add to Notebook</button>
-        <button>Acknowledge</button>
+        <div class="header"><h1>Content Blocks</h1></div>
+        <div class="content-block-card">
+            <article id="content-block">
+                <h2 id="content-block-title">Sample Title</h2>
+                <p id="content-block-content">Sample content goes here</p>
+            </article>
+            <div class="controls">
+                <button>Add to Notebook</button>
+                <button>Continue</button>
+            </div>
+        </div> 
     </body>
     <script>
         const contentBlock = {
-            title: "How to honk at a dog",
-            content: "Dogs are often used for honking practice. In this lesson, you'll learn all the details about proper dog honking-at."
+            title: "How to milk a cat",
+            content: "Many farmers insist that cows and goats are the only animals you can milk. They lie to keep the best for themselves. Cat milk can make you shoot lasers out of your eyes."
         };
-
-        document.getElementById("contentBlockTitle").innerHTML = contentBlock.title;
-        document.getElementById("contentBlockContent").innerHTML = contentBlock.content;
+        document.getElementById("content-block-title").innerHTML = contentBlock.title;
+        document.getElementById("content-block-content").innerHTML = contentBlock.content;
     </script>
 </html>

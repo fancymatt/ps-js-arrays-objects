@@ -1,27 +1,31 @@
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Content Blocks</title>
+        <title>Globomantics Company Onboarding</title>
         <link rel="stylesheet" href="reset.css">
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <div class="header"><h1>Content Blocks</h1></div>
+        <div class="header"><h1>Globomantics Company Onboarding</h1></div>
         <div class="content-block-card">
-            <article id="content-block">
-                <h2 id="content-block-title">Sample Title</h2>
-                <p id="content-block-content">Sample content goes here</p>
+            <article>
+                <div class="card-header"><h2 id="content-block-title">Sample Title</h2></div>
+                <div class="card-description"><p id="content-block-content">Sample content goes here</p></div>
             </article>
-            <div class="controls">
-                <button>Add to Notebook</button>
-                <button>Continue</button>
+            <div class="card-controls">
+                <button role="button">Back</button>
+                <button role="button">Bookmark</button>
+                <button class="primary" role="button">Acknowledge and Continue</button>
             </div>
         </div> 
+        <div class="progress">
+            <span>Card 3 of 15</span>
+        </div>
     </body>
     <script>
         const contentBlock = {
-            title: "How to milk a cat",
-            content: "Many farmers insist that cows and goats are the only animals you can milk. They lie to keep the best for themselves. Cat milk can make you shoot lasers out of your eyes."
+            title: "Password Guidelines",
+            content: "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
         };
         document.getElementById("content-block-title").innerHTML = contentBlock.title;
         document.getElementById("content-block-content").innerHTML = contentBlock.content;

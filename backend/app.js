@@ -46,7 +46,7 @@ app.get("/api/course/1", (req, res, next) => {
             {
                 "title": "Setting your Password",
                 "content": "Set your password when you first start using company computers.",
-                "color": "red"
+                "color": "#eef0c9"
             },
             {
                 "title": "Changing your Password",

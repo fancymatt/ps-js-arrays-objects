@@ -28,7 +28,7 @@
             </div>
         </div> 
         <div class="progress">
-            <span>Card <span id="card-number">x</span> of <span id="total-cards">y</span></span>
+            <span>Card <span id="block-number">x</span> of <span id="total-blocks">y</span></span>
         </div>
     </body>
     <script>
@@ -37,8 +37,7 @@
         
         document.getElementById("continue-btn").addEventListener('click', () => {
             currentContentBlockIndex++;
-            activeContentBlock = contentBlocks[currentContentBlockIndex];
-            updateCardDisplay();
+            updateCardDisplay(contentBlocks[currentContentBlockIndex]);
         });
 
         let fetchCourse = async function() {
@@ -46,16 +45,29 @@
                 .then(response => response.json())
                 .then(json => {
                     contentBlocks = json.course.content;
-                    updateCardDisplay();
+                    updateCardDisplay(contentBlocks[currentContentBlockIndex]);
+                    updateCourseDisplay();
                 });
         };
 
-        let updateCardDisplay = function() {
-            document.getElementById("content-block-title").innerHTML = contentBlocks[currentContentBlockIndex].title;
-            document.getElementById("content-block-content").innerHTML = contentBlocks[currentContentBlockIndex].content;
-            document.getElementById("card-number").innerHTML = currentContentBlockIndex + 1;
-            document.getElementById("total-cards").innerHTML = contentBlocks.length;
+        let updateCardDisplay = function(contentBlock) {
+            document.getElementById("content-block-title").innerHTML = contentBlock.title;
+            document.getElementById("content-block-content").innerHTML = contentBlock.content;
+
+            if ('color' in contentBlock) {
+                document.getElementById("card-body").style.backgroundColor = contentBlock.color;
+            } else {
+                document.getElementById("card-body").style.backgroundColor = "white";
+            }
+            
+            document.getElementById("block-number").innerHTML = currentContentBlockIndex + 1;
         };
+
+        let updateCourseDisplay = function() {
+            // only needs to be run one time
+            // course title goes somewhere
+            document.getElementById("total-blocks").innerHTML = contentBlocks.length;
+        }
 
         fetchCourse();
     </script>

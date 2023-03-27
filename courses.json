@@ -1,0 +1,43 @@
+{
+    "courses": [
+        {
+            "title": "Sample Course",
+            "content": [
+                {
+                    "title": "Blah 1",
+                    "content": "Blah blah blah"
+                },
+                {
+                    "title": "Blah 2",
+                    "content": "Blah blah blah"
+                },
+                {
+                    "title": "Blah 3",
+                    "content": "Blah blah blah"
+                },
+                {
+                    "title": "Blah 4",
+                    "content": "Blah blah blah"
+                }
+            ]
+        },
+        {
+            "title": "IT Security",
+            "content": [
+                {
+                    "title": "Password Guidelines",
+                    "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
+                },
+                {
+                    "title": "Setting your Password",
+                    "content": "Set your password when you first start using company computers.",
+                    "color": "red"
+                },
+                {
+                    "title": "Changing your Password",
+                    "content": "You must change your password every 180 days."
+                }
+            ]
+        }
+    ]
+}

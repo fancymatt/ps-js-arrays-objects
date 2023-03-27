@@ -32,31 +32,32 @@
         </div>
     </body>
     <script>
-        const contentBlocks = [
-            {
-                title: "Password Guidelines",
-                content: "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor.",
-                
-            },
-            {
-                title: "Setting your Password",
-                content: "Set your password when you first start using company computers.",
-                color: "red"
-            },
-            {
-                title: "Changing your Password",
-                content: "You must change your password every 180 days."
-            }
-        ];
-
+        let contentBlocks = null;
         let currentContentBlockIndex = 0;
-        let activeContentBlock = contentBlocks[currentContentBlockIndex];
         
         document.getElementById("continue-btn").addEventListener('click', () => {
             currentContentBlockIndex++;
             activeContentBlock = contentBlocks[currentContentBlockIndex];
             updateCardDisplay();
         });
+
+        let simulateFetch = function() {
+            contentBlocks = [
+                {
+                    "title": "Password Guidelines",
+                    "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
+                },
+                {
+                    "title": "Setting your Password",
+                    "content": "Set your password when you first start using company computers.",
+                    "color": "red"
+                },
+                {
+                    "title": "Changing your Password",
+                    "content": "You must change your password every 180 days."
+                }
+            ];
+        }
 
         let updateCardDisplay = function() {
             document.getElementById("content-block-title").innerHTML = activeContentBlock.title;
@@ -65,6 +66,8 @@
             document.getElementById("total-cards").innerHTML = contentBlocks.length;
         };
 
+        simulateFetch();
+        let activeContentBlock = contentBlocks[currentContentBlockIndex];
         updateCardDisplay();
 
     </script>

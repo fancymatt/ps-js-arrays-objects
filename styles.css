@@ -2,11 +2,11 @@ body {
     background-color: #f3f3f3;
     display: grid;
     grid-template-areas:
-        "header header   header"
-        "title  title    title "
-        ".      main     .     "
-        ".      progress .     "
-        ".      .        .     ";
+        "header header header"
+        "title  title  title "
+        ".      main   .     "
+        ".      footer .     "
+        ".      .      .     ";
 
     grid-template-columns: 1fr 45em 1fr;
     grid-template-rows: 50px 10em 400px 50px 1fr;
@@ -79,8 +79,12 @@ nav.main-nav {
     grid-template-rows: min-content 1fr min-content;
 }
 
+.course-list {
+    grid-area: main;
+}
+
 .progress {
-    grid-area: progress;
+    grid-area: footer;
     justify-self: center;
 }
 

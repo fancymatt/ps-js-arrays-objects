@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,27 +8,56 @@
     </head>
     <body>
         <div class="header"><h1>Globomantics Company Onboarding</h1></div>
-        <div class="content-block-card">
+        <div class="content-block-card" id="card-body">
             <article>
-                <div class="card-header"><h2 id="content-block-title">Sample Title</h2></div>
+                <div class="card-header" id="card-header"><h2 id="content-block-title">Sample Title</h2></div>
                 <div class="card-description"><p id="content-block-content">Sample content goes here</p></div>
             </article>
             <div class="card-controls">
                 <button role="button">Back</button>
                 <button role="button">Bookmark</button>
-                <button class="primary" role="button">Acknowledge and Continue</button>
+                <button id="continue-btn" class="primary" role="button">Acknowledge and Continue</button>
             </div>
         </div> 
         <div class="progress">
-            <span>Card 3 of 15</span>
+            <span>Card <span id="card-number">x</span> of <span id="total-cards">y</span></span>
         </div>
     </body>
     <script>
-        const contentBlock = {
-            title: "Password Guidelines",
-            content: "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
+        const contentBlocks = [
+            {
+                title: "Password Guidelines",
+                content: "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor.",
+                
+            },
+            {
+                title: "Setting your Password",
+                content: "Set your password when you first start using company computers.",
+                color: "red"
+            },
+            {
+                title: "Changing your Password",
+                content: "You must change your password every 180 days."
+            }
+        ];
+
+        let currentContentBlockIndex = 0;
+        let activeContentBlock = contentBlocks[currentContentBlockIndex];
+        
+        document.getElementById("continue-btn").addEventListener('click', () => {
+            currentContentBlockIndex++;
+            activeContentBlock = contentBlocks[currentContentBlockIndex];
+            updateCardDisplay();
+        });
+
+        let updateCardDisplay = function() {
+            document.getElementById("content-block-title").innerHTML = activeContentBlock.title;
+            document.getElementById("content-block-content").innerHTML = activeContentBlock.content;
+            document.getElementById("card-number").innerHTML = currentContentBlockIndex + 1;
+            document.getElementById("total-cards").innerHTML = contentBlocks.length;
         };
-        document.getElementById("content-block-title").innerHTML = contentBlock.title;
-        document.getElementById("content-block-content").innerHTML = contentBlock.content;
+
+        updateCardDisplay();
+
     </script>
 </html>

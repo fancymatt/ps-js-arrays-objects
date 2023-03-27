@@ -41,34 +41,22 @@
             updateCardDisplay();
         });
 
-        let simulateFetch = function() {
-            contentBlocks = [
-                {
-                    "title": "Password Guidelines",
-                    "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
-                },
-                {
-                    "title": "Setting your Password",
-                    "content": "Set your password when you first start using company computers.",
-                    "color": "red"
-                },
-                {
-                    "title": "Changing your Password",
-                    "content": "You must change your password every 180 days."
-                }
-            ];
-        }
+        let fetchCourse = async function() {
+            fetch('http://localhost:8000/api/course/1')
+                .then(response => response.json())
+                .then(json => {
+                    contentBlocks = json.course.content;
+                    updateCardDisplay();
+                });
+        };
 
         let updateCardDisplay = function() {
-            document.getElementById("content-block-title").innerHTML = activeContentBlock.title;
-            document.getElementById("content-block-content").innerHTML = activeContentBlock.content;
+            document.getElementById("content-block-title").innerHTML = contentBlocks[currentContentBlockIndex].title;
+            document.getElementById("content-block-content").innerHTML = contentBlocks[currentContentBlockIndex].content;
             document.getElementById("card-number").innerHTML = currentContentBlockIndex + 1;
             document.getElementById("total-cards").innerHTML = contentBlocks.length;
         };
 
-        simulateFetch();
-        let activeContentBlock = contentBlocks[currentContentBlockIndex];
-        updateCardDisplay();
-
+        fetchCourse();
     </script>
 </html>

@@ -41,12 +41,13 @@ app.get("/api/course/1", (req, res, next) => {
         "content": [
             {
                 "title": "Password Guidelines",
-                "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
+                "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor.",
+                "color": "lightyellow"
             },
             {
                 "title": "Setting your Password",
                 "content": "Set your password when you first start using company computers.",
-                "color": "#eef0c9"
+                "color": "red"
             },
             {
                 "title": "Changing your Password",

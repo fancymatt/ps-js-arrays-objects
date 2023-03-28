@@ -44,7 +44,8 @@
             fetch('http://localhost:8000/api/course/1')
                 .then(response => response.json())
                 .then(json => {
-                    contentBlocks = json.course.content;
+
+                    contentBlocks = parseJSONAsContentBlockObjects(json.course.content);
                     updateCardDisplay(contentBlocks[currentContentBlockIndex]);
                     updateCourseDisplay();
                 });
@@ -53,12 +54,7 @@
         let updateCardDisplay = function(contentBlock) {
             document.getElementById("content-block-title").innerHTML = contentBlock.title;
             document.getElementById("content-block-content").innerHTML = contentBlock.content;
-
-            if ('color' in contentBlock) {
-                document.getElementById("card-body").style.backgroundColor = contentBlock.color;
-            } else {
-                document.getElementById("card-body").style.backgroundColor = "white";
-            }
+            document.getElementById("card-body").style.backgroundColor = contentBlock.color;
             
             document.getElementById("block-number").innerHTML = currentContentBlockIndex + 1;
         };
@@ -67,6 +63,29 @@
             // only needs to be run one time
             // course title goes somewhere
             document.getElementById("total-blocks").innerHTML = contentBlocks.length;
+        }
+
+        let parseJSONAsContentBlockObjects = function(json) {
+            const outputArray = [];
+
+            const contentBlockPrototype = {
+                title: "no title defined",
+                content: "no content defined",
+                color: "white"
+            };
+
+            json.forEach(jsonContentBlock => {
+                let newContentBlock = Object.create(contentBlockPrototype);
+                
+                if (jsonContentBlock.color != "lightyellow") {
+                    delete jsonContentBlock.color;
+                }
+
+                Object.assign(newContentBlock, jsonContentBlock);
+                outputArray.push(newContentBlock);
+            });
+
+            return outputArray;
         }
 
         fetchCourse();

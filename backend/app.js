@@ -117,11 +117,11 @@ app.get("/api/courses", (req, res, next) => {
     });
 });
 
-app.get("/api/course/1", (req, res, next) => {
+app.get("/api/course/:uid", (req, res, next) => {
     
     res.status(200).json({
         message: "Course fetched successfully",
-        course: returnCourseForId("001")
+        course: returnCourseForId(req.params.uid)
     });
 });
 

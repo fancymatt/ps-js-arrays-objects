@@ -1,3 +1,4 @@
+const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 
@@ -5,51 +6,7 @@ const app = express();
 
 const bookmarkedContentBlocks = [];
 
-const courses = [
-    {
-        id: "001",
-        title: "IT Security",
-        content: [
-            {
-                "id": "001.01",
-                "title": "Password Guidelines",
-                "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
-            },
-            {
-                "id": "001.02",
-                "title": "Setting your Password",
-                "content": "Set your password when you first start using company computers.",
-                "color": "red"
-            },
-            {
-                "id": "001.03",
-                "title": "Changing your Password",
-                "content": "You must change your password every 180 days."
-            }
-        ]
-    },
-    {
-        id: "002",
-        title: "In the Workplace",
-        content: [
-            {
-                "id": "002.01",
-                "title": "Test content",
-                "content": "Test content"
-            },
-            {
-                "id": "002.02",
-                "title": "Test content",
-                "content": "Test content"
-            },
-            {
-                "id": "002.03",
-                "title": "Test content",
-                "content": "Test content"
-            }
-        ]
-    }
-];
+const courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
 
 const returnCourseForId = function(id) {
     // if the id is in the bookmark array, add the bookmarked: true property

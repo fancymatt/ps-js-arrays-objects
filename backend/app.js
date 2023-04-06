@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
+const bookmarkedContentBlocks = [];
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -40,15 +42,18 @@ app.get("/api/course/1", (req, res, next) => {
         "title": "IT Security",
         "content": [
             {
+                "id": "001.01",
                 "title": "Password Guidelines",
                 "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor."
             },
             {
+                "id": "001.02",
                 "title": "Setting your Password",
                 "content": "Set your password when you first start using company computers.",
                 "color": "red"
             },
             {
+                "id": "001.03",
                 "title": "Changing your Password",
                 "content": "You must change your password every 180 days."
             }
@@ -58,6 +63,23 @@ app.get("/api/course/1", (req, res, next) => {
         message: "Course fetched successfully",
         course: course
     });
-})
+});
+
+app.post("/api/bookmark", (req, res, next) => {
+    const id = req.body.id;
+
+    if (bookmarkedContentBlocks.includes(id)) {
+        res.status(404).json({
+            message: "This content block was already bookmarked!"
+        });
+    } else {
+        bookmarkedContentBlocks.push(id);
+        res.status(200).json({
+            message: `ContentBlock with id ${id} was added to bookmarked blocks`
+        });
+    }
+});
+
+
 
 module.exports = app;

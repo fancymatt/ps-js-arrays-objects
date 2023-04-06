@@ -59,6 +59,8 @@ const returnCourseForId = function(id) {
     foundCourse.content.forEach(contentBlock => {
         if (bookmarkedContentBlocks.includes(contentBlock.id)) {
             contentBlock.bookmarked = true;
+        } else {
+            contentBlock.bookmarked = false;
         }
     });
 

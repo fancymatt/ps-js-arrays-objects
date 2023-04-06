@@ -67,19 +67,36 @@ app.get("/api/course/1", (req, res, next) => {
 
 app.post("/api/bookmark", (req, res, next) => {
     const id = req.body.id;
+    const bookmarkIndex = bookmarkedContentBlocks.indexOf(id);
 
-    if (bookmarkedContentBlocks.includes(id)) {
+    if (bookmarkIndex != -1) {
         res.status(404).json({
-            message: "This content block was already bookmarked!"
+            message: "Block is already bookmarked, can't re-bookmark"
         });
-    } else {
-        bookmarkedContentBlocks.push(id);
-        res.status(200).json({
-            message: `ContentBlock with id ${id} was added to bookmarked blocks`
-        });
+        return;
     }
+
+    bookmarkedContentBlocks.push(id);
+    res.status(200).json({
+        message: `ContentBlock with id ${id} was added to bookmarked blocks`
+    });
 });
 
+app.post("/api/unbookmark", (req, res, next) => {
+    const id = req.body.id;
+    const bookmarkIndex = bookmarkedContentBlocks.indexOf(id);
 
+    if (bookmarkIndex == -1) {
+        res.status(404).json({
+            message: "Block is not bookmarked, can't unbookmark"
+        });
+        return;
+    }
+
+    bookmarkedContentBlocks.splice(bookmarkIndex, 1);
+    res.status(200).json({
+        message: `ContentBlock with id ${id} was removed from bookmarked blocks`
+    });
+});
 
 module.exports = app;

@@ -23,7 +23,7 @@
             </article>
             <div class="card-controls">
                 <button role="button">Back</button>
-                <button role="button">Bookmark</button>
+                <button id="bookmark-btn" role="button">Bookmark</button>
                 <button id="continue-btn" class="primary" role="button">Acknowledge and Continue</button>
             </div>
         </div> 
@@ -32,7 +32,8 @@
         </div>
     </body>
     <script>
-        let contentBlocks = null;
+        let contentBlocks = [];
+        let currentCourse = null;
         let currentContentBlockIndex = 0;
         
         document.getElementById("continue-btn").addEventListener('click', () => {
@@ -41,11 +42,62 @@
             updateCardDisplay();
         });
 
+        document.getElementById("bookmark-btn").addEventListener('click', () => {
+            contentBlocks[currentContentBlockIndex].bookmark();
+        });
+
+        const parseJsonAsCourse = function(json) {
+            const coursePrototype = {
+                id: "no id",
+                title: "no title",
+                author: "no author"
+            };
+
+            const newCourse = Object.create(coursePrototype);
+            
+            //newCourse.id = json.id;
+            newCourse.title = json.title;
+            //newCourse.author = json.author;
+
+            currentCourse = newCourse;
+            
+            json.course.content.forEach(contentBlock => parseJsonAsContentBlock(contentBlock));
+        };
+
+        const parseJsonAsContentBlock = function(json) {
+            const contentBlockPrototype = {
+                id: "no id",
+                title: "no title",
+                content: "no content",
+                bookmark: function() {
+                    fetch('http://localhost:8000/api/bookmark', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            "id": this.id,
+                            "bookmark": true
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(response => console.log(JSON.stringify(response)));
+                }
+            };
+
+            const newContentBlock = Object.create(contentBlockPrototype);
+
+            Object.assign(newContentBlock, json);
+
+            contentBlocks.push(newContentBlock);
+        }
+
         let fetchCourse = async function() {
             fetch('http://localhost:8000/api/course/1')
                 .then(response => response.json())
                 .then(json => {
-                    contentBlocks = json.course.content;
+                    parseJsonAsCourse(json);
                     updateCardDisplay();
                 });
         };

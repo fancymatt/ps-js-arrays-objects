@@ -5,42 +5,11 @@ const app = express();
 
 const bookmarkedContentBlocks = [];
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
-    res.setHeader('Content-Type', 'application/json');
-    next();
-});
-
-app.get("/api/courses", (req, res, next) => {
-    const courses = [
-        {
-            id: "001",
-            title: "Test course"
-        },
-        {
-            id: "002",
-            title: "In the Workplace"
-        },
-        {
-            id: "003",
-            title: "Harrassment and You"
-        }
-    ];
-    res.status(200).json({
-        message: "Courses fetched successfully",
-        courses: courses
-    });
-});
-
-app.get("/api/course/1", (req, res, next) => {
-    const course = {
-        "title": "IT Security",
-        "content": [
+const courses = [
+    {
+        id: "001",
+        title: "IT Security",
+        content: [
             {
                 "id": "001.01",
                 "title": "Password Guidelines",
@@ -58,10 +27,99 @@ app.get("/api/course/1", (req, res, next) => {
                 "content": "You must change your password every 180 days."
             }
         ]
-    };
+    },
+    {
+        id: "002",
+        title: "In the Workplace",
+        content: [
+            {
+                "id": "002.01",
+                "title": "Test content",
+                "content": "Test content"
+            },
+            {
+                "id": "002.02",
+                "title": "Test content",
+                "content": "Test content"
+            },
+            {
+                "id": "002.03",
+                "title": "Test content",
+                "content": "Test content"
+            }
+        ]
+    }
+];
+
+const returnCourseForId = function(id) {
+    // if the id is in the bookmark array, add the bookmarked: true property
+    let foundCourse = courses.find(course => course.id == id);
+    if (foundCourse == null) return null;
+
+    foundCourse.content.forEach(contentBlock => {
+        if (bookmarkedContentBlocks.includes(contentBlock.id)) {
+            contentBlock.bookmarked = true;
+        }
+    });
+
+    return foundCourse;
+};
+
+const returnBookmarkedContentBlocks = function() {
+    const responseArray = [];
+
+    bookmarkedContentBlocks.forEach(id => {
+        responseArray.push(findContentBlockWithId(id));
+    });
+
+    return responseArray;
+};
+
+const findContentBlockWithId = function(id) {
+    let foundContentBlock = null;
+    courses.forEach(course => {
+        course.content.forEach(contentBlock => {
+            if (contentBlock.id == id) {
+                foundContentBlock = contentBlock;
+            }
+        });
+    });
+    return foundContentBlock;
+};
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
+    res.setHeader('Content-Type', 'application/json');
+    next();
+});
+
+app.get("/api/courses", (req, res, next) => {
+    const responseArray = [];
+
+    courses.forEach(course => {
+        let simpleCourse = {};
+        simpleCourse.id = course.id;
+        simpleCourse.title = course.title;
+        responseArray.push(simpleCourse);
+    });
+
+    res.status(200).json({
+        message: "Courses fetched successfully",
+        courses: responseArray
+    });
+});
+
+app.get("/api/course/1", (req, res, next) => {
+    
     res.status(200).json({
         message: "Course fetched successfully",
-        course: course
+        course: returnCourseForId("001")
     });
 });
 
@@ -97,6 +155,15 @@ app.post("/api/unbookmark", (req, res, next) => {
     res.status(200).json({
         message: `ContentBlock with id ${id} was removed from bookmarked blocks`
     });
+});
+
+app.get("/api/notebook", (req, res, next) => {
+    let bookmarkedContentBlocks = returnBookmarkedContentBlocks();
+
+    res.status(200).json({
+        content: bookmarkedContentBlocks
+    });
+
 });
 
 module.exports = app;

@@ -15,12 +15,110 @@
                 </ul>
             </nav>
         </header>
-        <div class="title"><h1>Globomantics Company Onboarding</h1></div>
-        <div class="course-list">
-            Body goes here
-        </div> 
+        <div class="title"><h1>Student Notebook</h1></div>
+        <div class="notebook" id="notebook"></div> 
     </body>
     <script>
-        
+        let notebookRoot = document.getElementById("notebook");
+        let notebookContentBlocks = [];
+
+        const loadStudentNotebook = function() {
+            notebookContentBlocks = [];
+            fetch('http://localhost:8000/api/notebook')
+                .then(response => response.json())
+                .then(json => {
+                    console.log(json);
+                    json.content.forEach(jsonBlock => {
+                        parseJsonAsContentBlock(jsonBlock);
+                    });
+
+                    updateNotebookDisplay();
+                });
+        };
+
+        const parseJsonAsContentBlock = function(jsonBlock) {
+            const contentBlockPrototype = {
+                id: "no id",
+                title: "no title",
+                content: "no content",
+                bookmarked: false,
+                bookmark: function() {
+                    fetch('http://localhost:8000/api/bookmark', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ "id": this.id })
+                    })
+                    .then(response => {
+                        if (response.status == "200") {
+                            this.bookmarked = true
+                            updateNotebookDisplay();
+                        }
+                    });
+                },
+                unbookmark: function() {
+                    fetch('http://localhost:8000/api/unbookmark', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ "id": this.id })
+                    })
+                    .then(response => {
+                        if (response.status == "200") {
+                            this.bookmarked = false
+                            loadStudentNotebook();
+                        }
+                    });
+                }
+            }
+
+            const newContentBlock = Object.create(contentBlockPrototype);
+            Object.assign(newContentBlock, jsonBlock);
+            notebookContentBlocks.push(newContentBlock);
+        };
+
+        const updateNotebookDisplay = function() {
+            notebookRoot.innerHTML = '';
+            notebookContentBlocks.forEach(contentBlock => {
+                appendNotebookEntryForContentBlock(contentBlock);
+            });
+        };
+
+        const appendNotebookEntryForContentBlock = function(contentBlock) {
+            let article = document.createElement("article");
+            article.classList.add("notebook-entry");
+            
+            let headerDiv = document.createElement("div");
+            headerDiv.classList.add("card-header");
+            let header = document.createElement("h2");
+            header.innerHTML = contentBlock.title;
+            headerDiv.appendChild(header);
+            article.appendChild(headerDiv);
+
+            let descriptionDiv = document.createElement("div");
+            descriptionDiv.classList.add("card-description");
+            let descriptionParagraph = document.createElement("p");
+            descriptionParagraph.innerHTML = contentBlock.content;
+            descriptionDiv.appendChild(descriptionParagraph);
+            article.appendChild(descriptionDiv);
+
+            let controlsDiv = document.createElement("div");
+            controlsDiv.classList.add("card-controls");
+            let removeBtn = document.createElement("button");
+            removeBtn.innerHTML = "Remove from Notebook"
+            removeBtn.addEventListener('click', () => {
+                contentBlock.unbookmark();
+            });
+            controlsDiv.appendChild(removeBtn);
+            article.appendChild(controlsDiv);
+
+            notebookRoot.appendChild(article);
+        };
+
+        loadStudentNotebook();
     </script>
 </html>

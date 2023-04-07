@@ -49,10 +49,11 @@
         });
 
         document.getElementById("bookmark-btn").addEventListener('click', () => {
-            if (contentBlocks[currentContentBlockIndex].bookmarked) {
-                contentBlocks[currentContentBlockIndex].unbookmark();
+            let currentContentBlock = contentBlocks[currentContentBlockIndex];
+            if (currentContentBlock.bookmarked) {
+                currentContentBlock.unbookmark();
             } else {
-                contentBlocks[currentContentBlockIndex].bookmark();
+                currentContentBlock.bookmark();
             }
         });
 
@@ -65,9 +66,9 @@
 
             const newCourse = Object.create(coursePrototype);
             
-            //newCourse.id = json.id;
+            newCourse.id = json.id;
             newCourse.title = json.title;
-            //newCourse.author = json.author;
+            newCourse.author = json.author;
 
             currentCourse = newCourse;
             
@@ -132,12 +133,13 @@
         };
 
         let updateCardDisplay = function() {
-            document.getElementById("content-block-title").innerHTML = contentBlocks[currentContentBlockIndex].title;
-            document.getElementById("content-block-content").innerHTML = contentBlocks[currentContentBlockIndex].content;
+            let currentContentBlock = contentBlocks[currentContentBlockIndex];
+            document.getElementById("content-block-title").innerHTML = currentContentBlock.title;
+            document.getElementById("content-block-content").innerHTML = currentContentBlock.content;
             document.getElementById("card-number").innerHTML = currentContentBlockIndex + 1;
             document.getElementById("total-cards").innerHTML = contentBlocks.length;
 
-            if (contentBlocks[currentContentBlockIndex].bookmarked) {
+            if (currentContentBlock.bookmarked) {
                 document.getElementById("bookmark-btn").innerHTML = "Unbookmark";
             } else {
                 document.getElementById("bookmark-btn").innerHTML = "Bookmark";

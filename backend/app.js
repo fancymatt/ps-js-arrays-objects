@@ -1,24 +1,22 @@
-const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
+const fs = require("fs");
 
 const app = express();
 
+const courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
 const bookmarkedContentBlocks = [];
 
-const courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
-
 const returnCourseForId = function(id) {
-    // if the id is in the bookmark array, add the bookmarked: true property
     let foundCourse = courses.find(course => course.id == id);
     if (foundCourse == null) return null;
 
+    // update contentBlock objects based on bookmarked state
     foundCourse.content.forEach(contentBlock => {
-        if (bookmarkedContentBlocks.includes(contentBlock.id)) {
+        if (bookmarkedContentBlocks.includes(contentBlock.id))
             contentBlock.bookmarked = true;
-        } else {
+        else
             contentBlock.bookmarked = false;
-        }
     });
 
     return foundCourse;
@@ -46,6 +44,19 @@ const findContentBlockWithId = function(id) {
     return foundContentBlock;
 };
 
+const returnSimpleCourseList = function() {
+    const responseArray = [];
+
+    courses.forEach(course => {
+        let simpleCourse = {};
+        simpleCourse.id = course.id;
+        simpleCourse.title = course.title;
+        responseArray.push(simpleCourse);
+    });
+
+    return responseArray;
+}
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -59,23 +70,15 @@ app.use((req, res, next) => {
 });
 
 app.get("/api/courses", (req, res, next) => {
-    const responseArray = [];
-
-    courses.forEach(course => {
-        let simpleCourse = {};
-        simpleCourse.id = course.id;
-        simpleCourse.title = course.title;
-        responseArray.push(simpleCourse);
-    });
+    let simpleCourseList = returnSimpleCourseList();
 
     res.status(200).json({
         message: "Courses fetched successfully",
-        courses: responseArray
+        courses: simpleCourseList
     });
 });
 
 app.get("/api/course/:uid", (req, res, next) => {
-    
     res.status(200).json({
         message: "Course fetched successfully",
         course: returnCourseForId(req.params.uid)
@@ -94,6 +97,7 @@ app.post("/api/bookmark", (req, res, next) => {
     }
 
     bookmarkedContentBlocks.push(id);
+
     res.status(200).json({
         message: `ContentBlock with id ${id} was added to bookmarked blocks`
     });
@@ -111,6 +115,7 @@ app.post("/api/unbookmark", (req, res, next) => {
     }
 
     bookmarkedContentBlocks.splice(bookmarkIndex, 1);
+
     res.status(200).json({
         message: `ContentBlock with id ${id} was removed from bookmarked blocks`
     });
@@ -122,7 +127,6 @@ app.get("/api/notebook", (req, res, next) => {
     res.status(200).json({
         content: bookmarkedContentBlocks
     });
-
 });
 
 module.exports = app;

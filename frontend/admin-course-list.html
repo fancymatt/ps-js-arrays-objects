@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Notebook - Globomantics Company Onboarding</title>
+        <title>Admin - Globomantics Company Onboarding</title>
         <link rel="stylesheet" href="reset.css">
         <link rel="stylesheet" href="styles.css">
     </head>
@@ -20,7 +20,7 @@
                 </ul>
             </nav>
         </header>
-        <div class="title"><h1>Student Notebook</h1></div>
+        <div class="title"><h1>Admin</h1></div>
         <div class="notebook" id="notebook"></div> 
     </body>
     <script>
@@ -28,7 +28,7 @@
         let notebookContentBlocks = [];
 
         const loadStudentNotebook = function() {
-            
+            notebookContentBlocks = [];
             fetch('http://localhost:8000/api/notebook')
                 .then(response => response.json())
                 .then(json => {

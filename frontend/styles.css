@@ -248,6 +248,12 @@ a.button {
     border-bottom: 0;
 }
 
+.course-metadata-form {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1em;
+    margin-bottom: 2em;
+}
+
 .form-field {
     display: flex;
     flex-direction: column;

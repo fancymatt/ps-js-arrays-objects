@@ -21,10 +21,28 @@
             </nav>
         </header>
         <div class="title"><h1>Admin - Edit Course</h1></div>
-        <div class="course-form" id="edit-course-form"></div>
+        <div class="course-form">
+            <h2>Course Metadata</h2>
+            <div class="course-metadata-form">
+                <div class="form-field">
+                    <label>Course Title</label>
+                    <input id="course-title" type="text" value="title">
+                </div>
+                <div class="form-field">
+                    <label>Course ID</label>
+                    <input id="course-id" type="text" value="id">
+                </div>
+            </div>
+            <h2>Content Blocks</h2>
+            <div id="edit-course-form">
+
+            </div>
+        </div>
     </body>
     <script>
         let editCourseForm = document.getElementById("edit-course-form");
+        let courseTitleField = document.getElementById("course-title");
+        let courseIdField = document.getElementById("course-id");
         let contentBlocks = [];
         let currentCourse = null;
 
@@ -43,7 +61,7 @@
 
             currentCourse = newCourse;
             
-            json.course.content.forEach(contentBlock => parseJsonAsContentBlock(contentBlock));
+            json.content.forEach(contentBlock => parseJsonAsContentBlock(contentBlock));
         };
 
         const parseJsonAsContentBlock = function(json) {
@@ -98,12 +116,15 @@
             fetch('http://localhost:8000/api/course/' + urlParams.get('id'))
                 .then(response => response.json())
                 .then(json => {
-                    parseJsonAsCourse(json);
+                    parseJsonAsCourse(json.course);
                     updateCourseAdminDisplay();
                 });
         };
 
         let updateCourseAdminDisplay = function() {
+            courseTitleField.value = currentCourse.title;
+            courseIdField.value = currentCourse.id;
+
             editCourseForm.innerHTML = '';
             contentBlocks.forEach(contentBlock => {
                 editCourseForm.appendChild(createElementForContentBlock(contentBlock));

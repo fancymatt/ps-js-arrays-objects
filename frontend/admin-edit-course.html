@@ -21,54 +21,12 @@
             </nav>
         </header>
         <div class="title"><h1>Admin - Edit Course</h1></div>
-        <div class="course-form" id="edit-course-form">
-            <div class="content-block-form">
-                <div class="form-field">
-                    <label>Title</label>
-                    <input id="block-title" type="text" value="Sample content" >
-                </div>
-                <div class="form-field">
-                    <label>Description</label>
-                    <textarea id="block-description">Sample content</textarea>
-                </div>
-            </div>
-            <div class="content-block-form">
-                <div class="form-field">
-                    <label>Title</label>
-                    <input id="block-title" type="text" value="Sample content" >
-                </div>
-                <div class="form-field">
-                    <label>Description</label>
-                    <textarea id="block-description">Sample content</textarea>
-                </div>
-            </div>
-        </div>
+        <div class="course-form" id="edit-course-form"></div>
     </body>
     <script>
+        let editCourseForm = document.getElementById("edit-course-form");
         let contentBlocks = [];
         let currentCourse = null;
-        let currentContentBlockIndex = 0;
-        
-        document.getElementById("continue-btn").addEventListener('click', () => {
-            if (currentContentBlockIndex >= contentBlocks.length - 1) return;
-            currentContentBlockIndex++;
-            updateCardDisplay();
-        });
-
-        document.getElementById("back-btn").addEventListener('click', () => {
-            if (currentContentBlockIndex <= 0) return;
-            currentContentBlockIndex--;
-            updateCardDisplay();
-        });
-
-        document.getElementById("bookmark-btn").addEventListener('click', () => {
-            let currentContentBlock = contentBlocks[currentContentBlockIndex];
-            if (currentContentBlock.bookmarked) {
-                currentContentBlock.unbookmark();
-            } else {
-                currentContentBlock.bookmark();
-            }
-        });
 
         const parseJsonAsCourse = function(json) {
             const coursePrototype = {
@@ -141,22 +99,58 @@
                 .then(response => response.json())
                 .then(json => {
                     parseJsonAsCourse(json);
-                    updateCardDisplay();
+                    updateCourseAdminDisplay();
                 });
         };
 
-        let updateCardDisplay = function() {
-            let currentContentBlock = contentBlocks[currentContentBlockIndex];
-            document.getElementById("content-block-title").innerHTML = currentContentBlock.title;
-            document.getElementById("content-block-content").innerHTML = currentContentBlock.content;
-            document.getElementById("card-number").innerHTML = currentContentBlockIndex + 1;
-            document.getElementById("total-cards").innerHTML = contentBlocks.length;
+        let updateCourseAdminDisplay = function() {
+            editCourseForm.innerHTML = '';
+            contentBlocks.forEach(contentBlock => {
+                editCourseForm.appendChild(createElementForContentBlock(contentBlock));
+            });
+        };
 
-            if (currentContentBlock.bookmarked) {
-                document.getElementById("bookmark-btn").innerHTML = "Unbookmark";
-            } else {
-                document.getElementById("bookmark-btn").innerHTML = "Bookmark";
-            }
+        const createElementForContentBlock = function(contentBlockObject) {
+            let form = document.createElement("div");
+            form.classList.add("content-block-form");
+
+            let titleField = document.createElement("div");
+            titleField.classList.add("form-field");
+            let titleLabel = document.createElement("label");
+            titleLabel.innerHTML = "Title";
+            let titleInput = document.createElement("input");
+            titleInput.type = "text";
+            titleInput.value = contentBlockObject.title;
+
+            titleField.appendChild(titleLabel);
+            titleField.appendChild(titleInput);
+
+            let idField = document.createElement("div");
+            idField.classList.add("form-field");
+            let idLabel = document.createElement("label");
+            idLabel.innerHTML = "ID";
+            let idInput = document.createElement("input");
+            idInput.type = "text";
+            idInput.value = contentBlockObject.id;
+
+            idField.appendChild(idLabel);
+            idField.appendChild(idInput);
+
+            let descField = document.createElement("div");
+            descField.classList.add("form-field");
+            let descLabel = document.createElement("label");
+            descLabel.innerHTML = "Description";
+            let descTA = document.createElement("textarea");
+            descTA.innerHTML = contentBlockObject.content;
+
+            descField.appendChild(descLabel);
+            descField.appendChild(descTA);
+
+            form.appendChild(titleField);
+            form.appendChild(idField);
+            form.appendChild(descField);
+
+            return form;
         };
 
         fetchCourse();

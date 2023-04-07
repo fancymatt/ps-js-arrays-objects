@@ -22,7 +22,7 @@
         </header>
         <div class="title"><h1>Globomantics Company Onboarding</h1></div>
         <div class="course-list">
-            <ul id="course-list">
+            <ul id="course-list-root">
 
             </ul>
         </div> 
@@ -40,14 +40,19 @@
         };
 
         let updateCourseListDisplay = function() {
-            let ul = document.getElementById("course-list");
+            let ul = document.getElementById("course-list-root");
             courseList.forEach(course => {
                 const li = document.createElement("li");
-                const a = document.createElement("a");
-                a.innerHTML = course.title;
-                a.href = "study.html?id=" + course.id;
-                li.appendChild(a);
+                const h2 = document.createElement("h2");
+                h2.innerHTML = course.title;
+                li.appendChild(h2);
                 ul.appendChild(li);
+                let studyBtn = document.createElement("a");
+                studyBtn.innerHTML = "Study Now"
+                studyBtn.href = "study.html?id=" + course.id;
+                studyBtn.classList.add("button");
+                studyBtn.classList.add("primary");
+                li.appendChild(studyBtn);
             }
         )};
 

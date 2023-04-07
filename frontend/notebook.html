@@ -21,23 +21,24 @@
             </nav>
         </header>
         <div class="title"><h1>Student Notebook</h1></div>
-        <div class="notebook" id="notebook"></div> 
+        <div class="notebook" id="notebook"></div>
     </body>
     <script>
         let notebookRoot = document.getElementById("notebook");
         let notebookContentBlocks = [];
 
         const loadStudentNotebook = function() {
-            
+            notebookContentBlocks = [];
             fetch('http://localhost:8000/api/notebook')
                 .then(response => response.json())
                 .then(json => {
-                    console.log(json);
                     json.content.forEach(jsonBlock => {
                         parseJsonAsContentBlock(jsonBlock);
                     });
-
-                    updateNotebookDisplay();
+                    notebookRoot.innerHTML = "";
+                    notebookContentBlocks.forEach(contentBlock => {
+                        appendNotebookEntryForContentBlock(contentBlock);
+                    });
                 });
         };
 
@@ -59,7 +60,6 @@
                     .then(response => {
                         if (response.status == "200") {
                             this.bookmarked = true
-                            updateNotebookDisplay();
                         }
                     });
                 },
@@ -74,7 +74,7 @@
                     })
                     .then(response => {
                         if (response.status == "200") {
-                            this.bookmarked = false
+                            this.bookmarked = false;
                             loadStudentNotebook();
                         }
                     });
@@ -84,13 +84,6 @@
             const newContentBlock = Object.create(contentBlockPrototype);
             Object.assign(newContentBlock, jsonBlock);
             notebookContentBlocks.push(newContentBlock);
-        };
-
-        const updateNotebookDisplay = function() {
-            notebookRoot.innerHTML = '';
-            notebookContentBlocks.forEach(contentBlock => {
-                appendNotebookEntryForContentBlock(contentBlock);
-            });
         };
 
         const appendNotebookEntryForContentBlock = function(contentBlock) {
@@ -115,6 +108,7 @@
             controlsDiv.classList.add("card-controls");
             let removeBtn = document.createElement("button");
             removeBtn.innerHTML = "Remove from Notebook"
+            removeBtn.classList.add("button");
             removeBtn.addEventListener('click', () => {
                 contentBlock.unbookmark();
             });

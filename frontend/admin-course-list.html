@@ -29,32 +29,75 @@
     </body>
     <script>
         let courseList = [];
+        let courseListRoot = document.getElementById("course-list-root");
 
-        let fetchCourse = async function() {
+        let fetchCourses = async function() {
+            courseList = [];
             fetch('http://localhost:8000/api/courses')
                 .then(response => response.json())
                 .then(json => {
-                    courseList = json.courses;
+                    json.courses.forEach(course => {
+                        courseList.push(parseCourseJsonAsCourse(course));
+                    });
                     updateCourseListDisplay();
                 });
         };
 
+        let parseCourseJsonAsCourse = function(jsonCourse) {
+            let coursePrototype = {
+                title: "New course",
+                author: "No author",
+                id: "No id"
+            };
+            const newCourse = Object.create(coursePrototype);
+            Object.assign(newCourse, jsonCourse);
+            return newCourse;
+        };
+
         let updateCourseListDisplay = function() {
-            let ul = document.getElementById("course-list-root");
+            courseListRoot.innerHTML = '';
             courseList.forEach(course => {
                 const li = document.createElement("li");
                 const h2 = document.createElement("h2");
                 h2.innerHTML = course.title;
                 li.appendChild(h2);
-                ul.appendChild(li);
                 let studyBtn = document.createElement("a");
                 studyBtn.innerHTML = "Edit"
                 studyBtn.href = "admin-edit-course.html?id=" + course.id;
                 studyBtn.classList.add("button");
                 li.appendChild(studyBtn);
-            }
-        )};
+                courseListRoot.appendChild(li);
+            });
+            appendAddCourseButton();
+        };
 
-        fetchCourse();
+        let appendAddCourseButton = function() {
+            const li = document.createElement("li");
+            let createBtn = document.createElement("button");
+            createBtn.innerHTML = "Create New Course";
+            createBtn.classList.add("button");
+            createBtn.addEventListener('click', () => {
+                createNewCourse();
+            });
+            li.appendChild(createBtn);
+            courseListRoot.appendChild(li);
+        };
+
+        let createNewCourse = async function() {
+            fetch('http://localhost:8000/api/course', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.status == "200") {
+                    fetchCourses();
+                }
+            });
+        };
+
+        fetchCourses();
     </script>
 </html>

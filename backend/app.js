@@ -85,6 +85,13 @@ app.get("/api/course/:uid", (req, res, next) => {
     });
 });
 
+app.post("/api/course", (req, res, next) => {
+    courses.push({});
+    res.status(200).json({
+        message: "Empty course created successfully"
+    });
+});
+
 app.post("/api/bookmark", (req, res, next) => {
     const id = req.body.id;
     const bookmarkIndex = bookmarkedContentBlocks.indexOf(id);

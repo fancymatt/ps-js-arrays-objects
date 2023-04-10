@@ -26,16 +26,25 @@
 
             </ul>
         </div> 
+
+        <template id="courseArticle">
+            <li>
+                <h2 id="courseTitle">Title</h2>
+                <a id="studyCourseLink" href="#" class="button primary">Study Now</a>
+            </li>
+        </template>
+
     </body>
+
     <script src="shared.js"></script>
     <script>
-        let courseListRoot = document.getElementById("course-list-root");
+        const courseListRoot = document.getElementById("course-list-root");
 
         const onLoadCourses = function() {
             updateCourseListDisplay();
         }
 
-        let fetchCourses = async function() {
+        const fetchCourses = async function() {
             if (courses == null) {
                 fetch('http://localhost:8000/api/courses')
                     .then(response => response.json())
@@ -48,19 +57,12 @@
             }
         };
 
-        let updateCourseListDisplay = function() {
+        const updateCourseListDisplay = function() {
             courses.forEach(course => {
-                const li = document.createElement("li");
-                const h2 = document.createElement("h2");
-                h2.innerHTML = course.title;
-                li.appendChild(h2);
-                let studyBtn = document.createElement("a");
-                studyBtn.innerHTML = "Study Now"
-                studyBtn.href = "study.html?id=" + course.id;
-                studyBtn.classList.add("button");
-                studyBtn.classList.add("primary");
-                li.appendChild(studyBtn);
-                courseListRoot.appendChild(li);
+                let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
+                courseArticle.getElementById("courseTitle").innerHTML = course.title;
+                courseArticle.getElementById("studyCourseLink").href = "study.html?" + course.id;
+                courseListRoot.appendChild(courseArticle);
             });
         };
 

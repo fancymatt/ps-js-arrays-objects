@@ -32,15 +32,33 @@
             fetch('http://localhost:8000/api/notebook')
                 .then(response => response.json())
                 .then(json => {
-                    json.content.forEach(jsonBlock => {
-                        parseJsonAsContentBlock(jsonBlock);
-                    });
-                    notebookRoot.innerHTML = "";
-                    notebookContentBlocks.forEach(contentBlock => {
-                        appendNotebookEntryForContentBlock(contentBlock);
-                    });
+                    if (json.content.length == 0) {
+                        displayEmptyNotebook();  
+                    } else {
+                        displayNotebook(json.content);
+                    }                    
                 });
         };
+
+        const displayEmptyNotebook = function() {
+            notebookRoot.innerHTML = "";
+            let article = document.createElement("article");
+            article.classList.add("null-state");
+            let emptyP = document.createElement("p");
+            emptyP.innerHTML = "Your notebook is empty. Click 'Bookmark' while studying to add content to your notebook."
+            article.appendChild(emptyP);
+            notebookRoot.appendChild(article);
+        };
+
+        const displayNotebook = function(jsonBlocks) {
+            jsonBlocks.forEach(jsonBlock => {
+                parseJsonAsContentBlock(jsonBlock);
+            });
+            notebookRoot.innerHTML = "";
+            notebookContentBlocks.forEach(contentBlock => {
+                appendNotebookEntryForContentBlock(contentBlock);
+            });
+        }
 
         const parseJsonAsContentBlock = function(jsonBlock) {
             const contentBlockPrototype = {

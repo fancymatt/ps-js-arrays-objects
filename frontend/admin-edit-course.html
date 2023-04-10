@@ -52,18 +52,23 @@
                     <label for="cbDesc">Description</label>
                     <textarea id="cbDesc">????</textarea>
                 </div>
-                <p id="cbId">ID: 2352352</p>
+                <div>
+                    <p id="cbId">ID: 2352352</p>
+                </div>
+                <div class="card-controls">
+                    <button class="button" id="cbDelete">Delete Content Block</button>
+                </div>
             </div>
         </template>
 
     </body>
-    
+
     <script src="shared.js"></script>
     <script>
         let editCourseForm = document.getElementById("edit-course-form");
         let currentCourse = null;
 
-        let fetchCourse = async function() {
+        const fetchCourse = async function() {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
 
@@ -75,7 +80,7 @@
                 });
         };
 
-        let saveCourse = async function() {
+        const saveCourse = async function() {
             // TODO: course id should not be changeable
             fetch('http://localhost:8000/api/course/' + currentCourse.id, {
                 method: 'POST',
@@ -88,7 +93,7 @@
                 .then(fetchCourse);
         };
 
-        let updateEditCourseForm = function() {
+        const updateEditCourseForm = function() {
             const courseTitleField = document.getElementById("courseTitle");
             courseTitleField.value = currentCourse.title;
             courseTitleField.addEventListener('input', (event) => {
@@ -110,13 +115,31 @@
             const foundContentBlock = currentCourse.content.find(contentBlock => contentBlock.id == contentBlockId);
             if (foundContentBlock == null) console.error("Did not find content block with this id");
             foundContentBlock[property] = value;
-        }
+        };
 
         const createElementForContentBlock = function(contentBlockObject) {
             let contentBlockFormElement = document.getElementById("contentBlockForm").content.cloneNode(true);
+            let contentBlockTitleField = contentBlockFormElement.getElementById("cbTitle");
+            let contentBlockDescField = contentBlockFormElement.getElementById("cbDesc");
+
             contentBlockFormElement.getElementById("cbId").innerHTML = "ID: " + contentBlockObject.id;
-            contentBlockFormElement.getElementById("cbTitle").value = contentBlockObject.title;
-            contentBlockFormElement.getElementById("cbDesc").innerHTML = contentBlockObject.content;
+
+            contentBlockTitleField.value = contentBlockObject.title;
+            contentBlockTitleField.addEventListener('input', (event) => {
+                setContentBlockPropertyFromField(contentBlockObject.id, "title", event.target.value);
+            });
+
+            contentBlockDescField.innerHTML = contentBlockObject.content;
+            contentBlockDescField.addEventListener('input', (event) => {
+                setContentBlockPropertyFromField(contentBlockObject.id, "content", event.target.value);
+            });
+            
+            contentBlockFormElement.getElementById("cbDelete").addEventListener('click', () => {
+                let deleteIndex = currentCourse.content.findIndex(contentBlock => contentBlock.id == contentBlockObject.id);
+                currentCourse.content.splice(deleteIndex, 1);
+                updateEditCourseForm();
+            });
+
             return contentBlockFormElement;
         };
 

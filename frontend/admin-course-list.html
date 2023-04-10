@@ -67,7 +67,7 @@
             courses.forEach(course => {
                 let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
                 courseArticle.getElementById("courseTitle").innerHTML = course.title;
-                courseArticle.getElementById("editCourseLink").href = "admin-edit-course.html?" + course.id;
+                courseArticle.getElementById("editCourseLink").href = "admin-edit-course.html?id=" + course.id;
                 courseListRoot.appendChild(courseArticle);
             });
             

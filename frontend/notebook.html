@@ -23,6 +23,7 @@
         <div class="title"><h1>Student Notebook</h1></div>
         <div class="notebook" id="notebook"></div>
     </body>
+    <script src="shared.js"></script>
     <script>
         let notebookRoot = document.getElementById("notebook");
         let notebookContentBlocks = [];
@@ -51,58 +52,18 @@
         };
 
         const displayNotebook = function(jsonBlocks) {
-            jsonBlocks.forEach(jsonBlock => {
-                parseJsonAsContentBlock(jsonBlock);
-            });
+            notebookContentBlocks = [];
             notebookRoot.innerHTML = "";
+            jsonBlocks.forEach(jsonBlock => {
+                notebookContentBlocks.push(parseJsonAsContentBlock(jsonBlock));
+            });
+            
             notebookContentBlocks.forEach(contentBlock => {
-                appendNotebookEntryForContentBlock(contentBlock);
+                if (contentBlock.bookmarked) {
+                    appendNotebookEntryForContentBlock(contentBlock);
+                }
             });
         }
-
-        const parseJsonAsContentBlock = function(jsonBlock) {
-            const contentBlockPrototype = {
-                id: "no id",
-                title: "no title",
-                content: "no content",
-                bookmarked: false,
-                bookmark: function() {
-                    fetch('http://localhost:8000/api/bookmark', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ "id": this.id })
-                    })
-                    .then(response => {
-                        if (response.status == "200") {
-                            this.bookmarked = true
-                        }
-                    });
-                },
-                unbookmark: function() {
-                    fetch('http://localhost:8000/api/unbookmark', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ "id": this.id })
-                    })
-                    .then(response => {
-                        if (response.status == "200") {
-                            this.bookmarked = false;
-                            loadStudentNotebook();
-                        }
-                    });
-                }
-            }
-
-            const newContentBlock = Object.create(contentBlockPrototype);
-            Object.assign(newContentBlock, jsonBlock);
-            notebookContentBlocks.push(newContentBlock);
-        };
 
         const appendNotebookEntryForContentBlock = function(contentBlock) {
             let article = document.createElement("article");
@@ -128,6 +89,9 @@
             removeBtn.innerHTML = "Remove from Notebook"
             removeBtn.classList.add("button");
             removeBtn.addEventListener('click', () => {
+                let deleteIndex = notebookContentBlocks.findIndex(el => el.id == contentBlock.id);
+                notebookContentBlocks.splice(deleteIndex, 1);
+                displayNotebook(notebookContentBlocks);
                 contentBlock.unbookmark();
             });
             controlsDiv.appendChild(removeBtn);

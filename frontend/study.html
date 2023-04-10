@@ -36,13 +36,13 @@
             <span>Card <span id="block-number">x</span> of <span id="total-blocks">y</span></span>
         </div>
     </body>
+    <script src="shared.js"></script>
     <script>
-        let contentBlocks = [];
         let currentCourse = null;
         let currentContentBlockIndex = 0;
         
         document.getElementById("continue-btn").addEventListener('click', () => {
-            if (currentContentBlockIndex >= contentBlocks.length - 1) return;
+            if (currentContentBlockIndex >= currentCourse.content.length - 1) return;
             currentContentBlockIndex++;
             updateCardDisplay();
         });
@@ -54,76 +54,14 @@
         });
 
         document.getElementById("bookmark-btn").addEventListener('click', () => {
-            let currentContentBlock = contentBlocks[currentContentBlockIndex];
+            let currentContentBlock = currentCourse.content[currentContentBlockIndex];
             if (currentContentBlock.bookmarked) {
                 currentContentBlock.unbookmark();
             } else {
-                currentContentBlock.bookmark();
+                currentContentBlock.bookmark()
             }
+            updateCardDisplay();
         });
-
-        const parseJsonAsCourse = function(json) {
-            const coursePrototype = {
-                id: "no id",
-                title: "no title",
-                author: "no author"
-            };
-
-            const newCourse = Object.create(coursePrototype);
-            
-            newCourse.id = json.id;
-            newCourse.title = json.title;
-            newCourse.author = json.author;
-
-            currentCourse = newCourse;
-            
-            json.course.content.forEach(contentBlock => parseJsonAsContentBlock(contentBlock));
-        };
-
-        const parseJsonAsContentBlock = function(json) {
-            const contentBlockPrototype = {
-                id: "no id",
-                title: "no title",
-                content: "no content",
-                bookmarked: false,
-                bookmark: function() {
-                    fetch('http://localhost:8000/api/bookmark', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ "id": this.id })
-                    })
-                    .then(response => {
-                        if (response.status == "200") {
-                            this.bookmarked = true
-                            updateCardDisplay();
-                        }
-                    });
-                },
-                unbookmark: function() {
-                    fetch('http://localhost:8000/api/unbookmark', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ "id": this.id })
-                    })
-                    .then(response => {
-                        if (response.status == "200") {
-                            this.bookmarked = false
-                            updateCardDisplay();
-                        }
-                    });
-                }
-            };
-
-            const newContentBlock = Object.create(contentBlockPrototype);
-            Object.assign(newContentBlock, json);
-            contentBlocks.push(newContentBlock);
-        }
 
         let fetchCourse = async function() {
             const queryString = window.location.search;
@@ -132,17 +70,17 @@
             fetch('http://localhost:8000/api/course/' + urlParams.get('id'))
                 .then(response => response.json())
                 .then(json => {
-                    parseJsonAsCourse(json);
+                    currentCourse = parseCourseJsonAsCourse(json.course);
                     updateCardDisplay();
                 });
         };
 
         let updateCardDisplay = function() {
-            let currentContentBlock = contentBlocks[currentContentBlockIndex];
+            let currentContentBlock = currentCourse.content[currentContentBlockIndex];
             document.getElementById("content-block-title").innerHTML = currentContentBlock.title;
             document.getElementById("content-block-content").innerHTML = currentContentBlock.content;
-            document.getElementById("card-number").innerHTML = currentContentBlockIndex + 1;
-            document.getElementById("total-cards").innerHTML = contentBlocks.length;
+            document.getElementById("block-number").innerHTML = currentContentBlockIndex + 1;
+            document.getElementById("total-blocks").innerHTML = currentCourse.content.length;
 
             if (currentContentBlock.bookmarked) {
                 document.getElementById("bookmark-btn").innerHTML = "Unbookmark";

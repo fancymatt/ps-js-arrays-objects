@@ -27,34 +27,29 @@
             </ul>
         </div> 
     </body>
+    <script src="shared.js"></script>
     <script>
-        let courseList = [];
         let courseListRoot = document.getElementById("course-list-root");
 
-        let fetchCourse = async function() {
-            fetch('http://localhost:8000/api/courses')
-                .then(response => response.json())
-                .then(json => {
-                    json.courses.forEach(course => {
-                        courseList.push(parseCourseJsonAsCourse(course));
-                    })
-                    updateCourseListDisplay();
-                });
-        };
+        const onLoadCourses = function() {
+            updateCourseListDisplay();
+        }
 
-        let parseCourseJsonAsCourse = function(jsonCourse) {
-            let coursePrototype = {
-                title: "New course",
-                author: "No author",
-                id: "No id"
-            };
-            const newCourse = Object.create(coursePrototype);
-            Object.assign(newCourse, jsonCourse);
-            return newCourse;
+        let fetchCourses = async function() {
+            if (courses == null) {
+                fetch('http://localhost:8000/api/courses')
+                    .then(response => response.json())
+                    .then(json => {
+                        parseCourseListJsonAsCourseList(json.courses);
+                        onLoadCourses();
+                    });
+            } else {
+                onLoadCourses();
+            }
         };
 
         let updateCourseListDisplay = function() {
-            courseList.forEach(course => {
+            courses.forEach(course => {
                 const li = document.createElement("li");
                 const h2 = document.createElement("h2");
                 h2.innerHTML = course.title;
@@ -69,6 +64,6 @@
             });
         };
 
-        fetchCourse();
+        fetchCourses();
     </script>
 </html>

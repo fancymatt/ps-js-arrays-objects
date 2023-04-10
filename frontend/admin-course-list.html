@@ -25,6 +25,7 @@
             <ul id="course-list-root"></ul>
         </div> 
     </body>
+    <script src="shared.js"></script>
     <script>
         let courseList = [];
         let courseListRoot = document.getElementById("course-list-root");
@@ -41,16 +42,7 @@
                 });
         };
 
-        let parseCourseJsonAsCourse = function(jsonCourse) {
-            let coursePrototype = {
-                title: "New course",
-                author: "No author",
-                id: "No id"
-            };
-            const newCourse = Object.create(coursePrototype);
-            Object.assign(newCourse, jsonCourse);
-            return newCourse;
-        };
+        
 
         let updateCourseListDisplay = function() {
             courseListRoot.innerHTML = '';

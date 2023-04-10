@@ -6,7 +6,7 @@ const uuid = require('short-uuid');
 const app = express();
 
 let courses;
-const bookmarkedContentBlocks = [];
+const bookmarkedContentBlockIds = [];
 
 const fetchCoursesFromJson = function() {
     courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
@@ -18,7 +18,7 @@ const returnCourseForId = function(id) {
 
     // update contentBlock objects based on bookmarked state
     foundCourse.content.forEach(contentBlock => {
-        if (bookmarkedContentBlocks.includes(contentBlock.id))
+        if (bookmarkedContentBlockIds.includes(contentBlock.id))
             contentBlock.bookmarked = true;
         else
             contentBlock.bookmarked = false;
@@ -31,16 +31,16 @@ const updateCourseForId = function(id, course) {
     let foundCourseIndex = courses.findIndex(course => course.id == id);
     courses[foundCourseIndex] = {};
     Object.assign(courses[foundCourseIndex], course);
-    console.log("Now courses are");
-    console.log(courses);
     saveCoursesToJson();
 }
 
 const returnBookmarkedContentBlocks = function() {
     const responseArray = [];
 
-    bookmarkedContentBlocks.forEach(id => {
-        responseArray.push(findContentBlockWithId(id));
+    bookmarkedContentBlockIds.forEach(id => {
+        let bookmarkedContentBlock = findContentBlockWithId(id);
+        bookmarkedContentBlock.bookmarked = true;
+        responseArray.push(bookmarkedContentBlock);
     });
 
     return responseArray;
@@ -49,26 +49,15 @@ const returnBookmarkedContentBlocks = function() {
 const findContentBlockWithId = function(id) {
     let foundContentBlock = null;
     courses.forEach(course => {
-        course.content.forEach(contentBlock => {
-            if (contentBlock.id == id) {
-                foundContentBlock = contentBlock;
-            }
-        });
+        if (course.content != null && course.content.length > 0) {
+            course.content.forEach(contentBlock => {
+                if (contentBlock.id == id) {
+                    foundContentBlock = contentBlock;
+                }
+            });
+        } 
     });
     return foundContentBlock;
-};
-
-const returnSimpleCourseList = function() {
-    const responseArray = [];
-
-    courses.forEach(course => {
-        let simpleCourse = {};
-        simpleCourse.id = course.id;
-        simpleCourse.title = course.title;
-        responseArray.push(simpleCourse);
-    });
-
-    return responseArray;
 };
 
 const saveCoursesToJson = function() {
@@ -90,11 +79,10 @@ app.use((req, res, next) => {
 });
 
 app.get("/api/courses", (req, res, next) => {
-    let simpleCourseList = returnSimpleCourseList();
 
     res.status(200).json({
         message: "Courses fetched successfully",
-        courses: simpleCourseList
+        courses: courses
     });
 });
 
@@ -125,7 +113,7 @@ app.post("/api/course/:uid", (req, res, next) => {
 
 app.post("/api/bookmark", (req, res, next) => {
     const id = req.body.id;
-    const bookmarkIndex = bookmarkedContentBlocks.indexOf(id);
+    const bookmarkIndex = bookmarkedContentBlockIds.indexOf(id);
 
     if (bookmarkIndex != -1) {
         res.status(404).json({
@@ -134,7 +122,7 @@ app.post("/api/bookmark", (req, res, next) => {
         return;
     }
 
-    bookmarkedContentBlocks.push(id);
+    bookmarkedContentBlockIds.push(id);
 
     res.status(200).json({
         message: `ContentBlock with id ${id} was added to bookmarked blocks`
@@ -143,7 +131,7 @@ app.post("/api/bookmark", (req, res, next) => {
 
 app.post("/api/unbookmark", (req, res, next) => {
     const id = req.body.id;
-    const bookmarkIndex = bookmarkedContentBlocks.indexOf(id);
+    const bookmarkIndex = bookmarkedContentBlockIds.indexOf(id);
 
     if (bookmarkIndex == -1) {
         res.status(404).json({
@@ -152,7 +140,7 @@ app.post("/api/unbookmark", (req, res, next) => {
         return;
     }
 
-    bookmarkedContentBlocks.splice(bookmarkIndex, 1);
+    bookmarkedContentBlockIds.splice(bookmarkIndex, 1);
 
     res.status(200).json({
         message: `ContentBlock with id ${id} was removed from bookmarked blocks`

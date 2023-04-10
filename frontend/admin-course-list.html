@@ -28,14 +28,18 @@
         <template id="courseArticle">
             <li>
                 <h2 id="courseTitle">Title</h2>
-                <a id="editCourseLink" href="#" class="button">Edit</a>
+                <div class="card-controls">
+                    <a id="editCourseLink" href="#" class="button">Edit</a>
+                    <button id="deleteCourseBtn" href="#" class="button destructive">Delete</button>
+                </div>
+                
             </li>
         </template>
 
         <template id="controlsButtons">
             <li class="card-controls">
                 <button class="button" onclick="saveToDb()">Save Changes to DB</button>
-                <button class="button primary" onclick="saveToDb()">Create New Course</button>
+                <button class="button primary" onclick="createNewCourse()">Create New Course</button>
             </li>
         </template>
 
@@ -68,6 +72,11 @@
                 let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
                 courseArticle.getElementById("courseTitle").innerHTML = course.title;
                 courseArticle.getElementById("editCourseLink").href = "admin-edit-course.html?id=" + course.id;
+                courseArticle.getElementById("deleteCourseBtn").addEventListener('click', () => {
+                    let deleteIndex = courses.findIndex(dbCourse => dbCourse.id == course.id);
+                    courses.splice(deleteIndex, 1);
+                    onLoadCourses();
+                });
                 courseListRoot.appendChild(courseArticle);
             });
             
@@ -90,10 +99,17 @@
             });
         };
 
-        const saveToDb = function() {
+        const saveToDb = async function() {
+            // TODO: course id should not be changeable
             fetch('http://localhost:8000/api/save-db', {
-                method: 'POST'
-            });
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(courses)
+            })
+                .then(fetchCourses);
         };
 
         fetchCourses();

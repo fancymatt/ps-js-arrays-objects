@@ -156,7 +156,14 @@ app.get("/api/notebook", (req, res, next) => {
 });
 
 app.post("/api/save-db", (req, res, next) => {
+    courses = req.body;
     saveCoursesToJson();
+    
+    res.status(200).json({
+        message: "Course updated successfully"
+    });
+
+    
 });
 
 module.exports = app;

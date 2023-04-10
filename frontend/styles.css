@@ -184,6 +184,14 @@ nav a {
     background-color: #97f2a4;
 }
 
+.button.destructive {
+    background-color: #ff3333;
+}
+
+.button.destructive:after {
+    background-color: #f2aaaa;
+}
+
 a.button {
     text-decoration: none;;
 }

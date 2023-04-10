@@ -1,7 +1,62 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const fs = require("fs");
 
 const app = express();
+
+const courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
+const bookmarkedContentBlocks = [];
+
+const returnCourseForId = function(id) {
+    let foundCourse = courses.find(course => course.id == id);
+    if (foundCourse == null) return null;
+
+    // update contentBlock objects based on bookmarked state
+    foundCourse.content.forEach(contentBlock => {
+        if (bookmarkedContentBlocks.includes(contentBlock.id))
+            contentBlock.bookmarked = true;
+        else
+            contentBlock.bookmarked = false;
+    });
+
+    return foundCourse;
+};
+
+const returnBookmarkedContentBlocks = function() {
+    const responseArray = [];
+
+    bookmarkedContentBlocks.forEach(id => {
+        responseArray.push(findContentBlockWithId(id));
+    });
+
+    return responseArray;
+};
+
+const findContentBlockWithId = function(id) {
+    let foundContentBlock = null;
+    courses.forEach(course => {
+        course.content.forEach(contentBlock => {
+            if (contentBlock.id == id) {
+                foundContentBlock = contentBlock;
+            }
+        });
+    });
+    return foundContentBlock;
+};
+
+const returnSimpleCourseList = function() {
+    const responseArray = [];
+
+    courses.forEach(course => {
+        let simpleCourse = {};
+        simpleCourse.id = course.id;
+        simpleCourse.title = course.title;
+        responseArray.push(simpleCourse);
+    });
+
+    return responseArray;
+}
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -15,50 +70,63 @@ app.use((req, res, next) => {
 });
 
 app.get("/api/courses", (req, res, next) => {
-    const courses = [
-        {
-            id: "001",
-            title: "Test course"
-        },
-        {
-            id: "002",
-            title: "In the Workplace"
-        },
-        {
-            id: "003",
-            title: "Harrassment and You"
-        }
-    ];
+    let simpleCourseList = returnSimpleCourseList();
+
     res.status(200).json({
         message: "Courses fetched successfully",
-        courses: courses
+        courses: simpleCourseList
     });
 });
 
-app.get("/api/course/1", (req, res, next) => {
-    const course = {
-        "title": "IT Security",
-        "content": [
-            {
-                "title": "Password Guidelines",
-                "content": "In your onboarding welcome pack you have been given information to access our password management system. This system is the repository for all shared company passwords. Any password necessary to perform your job responsibilities will be stored in the system and access will be shared with you.\nDo not copy any company passwords to external locations such as a personal text document or a physical note on your desk.\nIf you need access to a password which is not shared with you please contact your supervisor.",
-                "color": "lightyellow"
-            },
-            {
-                "title": "Setting your Password",
-                "content": "Set your password when you first start using company computers.",
-                "color": "red"
-            },
-            {
-                "title": "Changing your Password",
-                "content": "You must change your password every 180 days."
-            }
-        ]
-    };
+app.get("/api/course/:uid", (req, res, next) => {
     res.status(200).json({
         message: "Course fetched successfully",
-        course: course
+        course: returnCourseForId(req.params.uid)
     });
-})
+});
+
+app.post("/api/bookmark", (req, res, next) => {
+    const id = req.body.id;
+    const bookmarkIndex = bookmarkedContentBlocks.indexOf(id);
+
+    if (bookmarkIndex != -1) {
+        res.status(404).json({
+            message: "Block is already bookmarked, can't re-bookmark"
+        });
+        return;
+    }
+
+    bookmarkedContentBlocks.push(id);
+
+    res.status(200).json({
+        message: `ContentBlock with id ${id} was added to bookmarked blocks`
+    });
+});
+
+app.post("/api/unbookmark", (req, res, next) => {
+    const id = req.body.id;
+    const bookmarkIndex = bookmarkedContentBlocks.indexOf(id);
+
+    if (bookmarkIndex == -1) {
+        res.status(404).json({
+            message: "Block is not bookmarked, can't unbookmark"
+        });
+        return;
+    }
+
+    bookmarkedContentBlocks.splice(bookmarkIndex, 1);
+
+    res.status(200).json({
+        message: `ContentBlock with id ${id} was removed from bookmarked blocks`
+    });
+});
+
+app.get("/api/notebook", (req, res, next) => {
+    let bookmarkedContentBlocks = returnBookmarkedContentBlocks();
+
+    res.status(200).json({
+        content: bookmarkedContentBlocks
+    });
+});
 
 module.exports = app;

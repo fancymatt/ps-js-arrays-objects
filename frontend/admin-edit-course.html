@@ -20,47 +20,31 @@
                 </ul>
             </nav>
         </header>
-        <div class="title"><h1>Globomantics Company Onboarding</h1></div>
-        <div class="content-block-card" id="card-body">
-            <article>
-                <div class="card-header" id="card-header"><h2 id="content-block-title">Sample Title</h2></div>
-                <div class="card-description"><p id="content-block-content">Sample content goes here</p></div>
-            </article>
-            <div class="card-controls">
-                <button id="back-btn" class="button">Back</button>
-                <button id="bookmark-btn" class="button">Bookmark</button>
-                <button id="continue-btn" class="primary button">Acknowledge and Continue</button>
+        <div class="title"><h1>Admin - Edit Course</h1></div>
+        <div class="course-form">
+            <h2>Course Metadata</h2>
+            <div class="course-metadata-form">
+                <div class="form-field">
+                    <label>Course Title</label>
+                    <input id="course-title" type="text" value="title">
+                </div>
+                <div class="form-field">
+                    <label>Course ID</label>
+                    <input id="course-id" type="text" value="id">
+                </div>
             </div>
-        </div> 
-        <div class="progress">
-            <span>Card <span id="block-number">x</span> of <span id="total-blocks">y</span></span>
+            <h2>Content Blocks</h2>
+            <div id="edit-course-form">
+
+            </div>
         </div>
     </body>
     <script>
+        let editCourseForm = document.getElementById("edit-course-form");
+        let courseTitleField = document.getElementById("course-title");
+        let courseIdField = document.getElementById("course-id");
         let contentBlocks = [];
         let currentCourse = null;
-        let currentContentBlockIndex = 0;
-        
-        document.getElementById("continue-btn").addEventListener('click', () => {
-            if (currentContentBlockIndex >= contentBlocks.length - 1) return;
-            currentContentBlockIndex++;
-            updateCardDisplay();
-        });
-
-        document.getElementById("back-btn").addEventListener('click', () => {
-            if (currentContentBlockIndex <= 0) return;
-            currentContentBlockIndex--;
-            updateCardDisplay();
-        });
-
-        document.getElementById("bookmark-btn").addEventListener('click', () => {
-            let currentContentBlock = contentBlocks[currentContentBlockIndex];
-            if (currentContentBlock.bookmarked) {
-                currentContentBlock.unbookmark();
-            } else {
-                currentContentBlock.bookmark();
-            }
-        });
 
         const parseJsonAsCourse = function(json) {
             const coursePrototype = {
@@ -77,7 +61,7 @@
 
             currentCourse = newCourse;
             
-            json.course.content.forEach(contentBlock => parseJsonAsContentBlock(contentBlock));
+            json.content.forEach(contentBlock => parseJsonAsContentBlock(contentBlock));
         };
 
         const parseJsonAsContentBlock = function(json) {
@@ -132,53 +116,63 @@
             fetch('http://localhost:8000/api/course/' + urlParams.get('id'))
                 .then(response => response.json())
                 .then(json => {
-                    parseJsonAsCourse(json);
-                    updateCardDisplay();
+                    parseJsonAsCourse(json.course);
+                    updateCourseAdminDisplay();
                 });
         };
 
-        let updateCardDisplay = function() {
-            let currentContentBlock = contentBlocks[currentContentBlockIndex];
-            document.getElementById("content-block-title").innerHTML = currentContentBlock.title;
-            document.getElementById("content-block-content").innerHTML = currentContentBlock.content;
-            document.getElementById("card-number").innerHTML = currentContentBlockIndex + 1;
-            document.getElementById("total-cards").innerHTML = contentBlocks.length;
+        let updateCourseAdminDisplay = function() {
+            courseTitleField.value = currentCourse.title;
+            courseIdField.value = currentCourse.id;
 
-            if (currentContentBlock.bookmarked) {
-                document.getElementById("bookmark-btn").innerHTML = "Unbookmark";
-            } else {
-                document.getElementById("bookmark-btn").innerHTML = "Bookmark";
-            }
+            editCourseForm.innerHTML = '';
+            contentBlocks.forEach(contentBlock => {
+                editCourseForm.appendChild(createElementForContentBlock(contentBlock));
+            });
         };
 
-        let updateCourseDisplay = function() {
-            // only needs to be run one time
-            // course title goes somewhere
-            document.getElementById("total-blocks").innerHTML = contentBlocks.length;
-        }
+        const createElementForContentBlock = function(contentBlockObject) {
+            let form = document.createElement("div");
+            form.classList.add("content-block-form");
 
-        let parseJSONAsContentBlockObjects = function(json) {
-            const outputArray = [];
+            let titleField = document.createElement("div");
+            titleField.classList.add("form-field");
+            let titleLabel = document.createElement("label");
+            titleLabel.innerHTML = "Title";
+            let titleInput = document.createElement("input");
+            titleInput.type = "text";
+            titleInput.value = contentBlockObject.title;
 
-            const contentBlockPrototype = {
-                title: "no title defined",
-                content: "no content defined",
-                color: "white"
-            };
+            titleField.appendChild(titleLabel);
+            titleField.appendChild(titleInput);
 
-            json.forEach(jsonContentBlock => {
-                let newContentBlock = Object.create(contentBlockPrototype);
-                
-                if (jsonContentBlock.color != "lightyellow") {
-                    delete jsonContentBlock.color;
-                }
+            let idField = document.createElement("div");
+            idField.classList.add("form-field");
+            let idLabel = document.createElement("label");
+            idLabel.innerHTML = "ID";
+            let idInput = document.createElement("input");
+            idInput.type = "text";
+            idInput.value = contentBlockObject.id;
 
-                Object.assign(newContentBlock, jsonContentBlock);
-                outputArray.push(newContentBlock);
-            });
+            idField.appendChild(idLabel);
+            idField.appendChild(idInput);
 
-            return outputArray;
-        }
+            let descField = document.createElement("div");
+            descField.classList.add("form-field");
+            let descLabel = document.createElement("label");
+            descLabel.innerHTML = "Description";
+            let descTA = document.createElement("textarea");
+            descTA.innerHTML = contentBlockObject.content;
+
+            descField.appendChild(descLabel);
+            descField.appendChild(descTA);
+
+            form.appendChild(titleField);
+            form.appendChild(idField);
+            form.appendChild(descField);
+
+            return form;
+        };
 
         fetchCourse();
     </script>

@@ -26,6 +26,15 @@ const returnCourseForId = function(id) {
     return foundCourse;
 };
 
+const updateCourseForId = function(id, course) {
+    let foundCourseIndex = courses.findIndex(course => course.id == id);
+    courses[foundCourseIndex] = {};
+    Object.assign(courses[foundCourseIndex], course);
+    console.log("Now courses are");
+    console.log(courses);
+    saveCoursesToJson();
+}
+
 const returnBookmarkedContentBlocks = function() {
     const responseArray = [];
 
@@ -63,7 +72,7 @@ const returnSimpleCourseList = function() {
 
 const saveCoursesToJson = function() {
     const json = JSON.stringify(courses);
-    fs.writeFile('courses-update.json', json, 'utf8', fetchCoursesFromJson);
+    fs.writeFile('courses.json', json, 'utf8', fetchCoursesFromJson);
 };
 
 fetchCoursesFromJson();
@@ -99,6 +108,16 @@ app.post("/api/course", (req, res, next) => {
     courses.push({});
     res.status(200).json({
         message: "Empty course created successfully"
+    });
+});
+
+app.post("/api/course/:uid", (req, res, next) => {
+    console.log("Request body");
+    console.log(req.body);
+    updateCourseForId(req.params.uid, req.body);
+    
+    res.status(200).json({
+        message: "Course updated successfully"
     });
 });
 

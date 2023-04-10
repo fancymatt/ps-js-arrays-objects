@@ -61,6 +61,7 @@
 
             currentCourse = newCourse;
             
+            contentBlocks = [];
             json.content.forEach(contentBlock => parseJsonAsContentBlock(contentBlock));
         };
 
@@ -121,15 +122,66 @@
                 });
         };
 
+        let appendSaveDbButton = function() {
+            const li = document.createElement("li");
+            let createBtn = document.createElement("button");
+            createBtn.innerHTML = "Save Changes to DB";
+            createBtn.classList.add("button");
+            createBtn.addEventListener('click', () => {
+                saveToDb();
+            });
+            li.appendChild(createBtn);
+            courseListRoot.appendChild(li);
+        }
+
+        let saveCourse = async function() {
+            let courseToSave = {};
+            // remind me why I don't just use currentCourse?
+            Object.assign(courseToSave, currentCourse);
+            courseToSave.content = contentBlocks;
+
+            // TODO: course id should not be changeable
+            fetch('http://localhost:8000/api/course/' + currentCourse.id, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(courseToSave)
+            })
+                .then(fetchCourse);
+        };
+
         let updateCourseAdminDisplay = function() {
             courseTitleField.value = currentCourse.title;
+            courseTitleField.addEventListener('input', (event) => {
+                currentCourse.title = event.target.value;
+            });
+
             courseIdField.value = currentCourse.id;
 
             editCourseForm.innerHTML = '';
             contentBlocks.forEach(contentBlock => {
                 editCourseForm.appendChild(createElementForContentBlock(contentBlock));
             });
+            appendSaveCourseButton();
         };
+
+        let appendSaveCourseButton = function() {
+            const createBtn = document.createElement("button");
+            createBtn.innerHTML = "Save Changes";
+            createBtn.classList.add("button");
+            createBtn.addEventListener('click', () => {
+                saveCourse();
+            });
+            editCourseForm.appendChild(createBtn);
+        }
+
+        const setContentBlockPropertyFromField = function(contentBlockId, property, value) {
+            const foundContentBlock = contentBlocks.find(contentBlock => contentBlock.id == contentBlockId);
+            if (foundContentBlock == null) console.error("Did not find content block with this id");
+            foundContentBlock[property] = value;
+        }
 
         const createElementForContentBlock = function(contentBlockObject) {
             let form = document.createElement("div");
@@ -142,6 +194,9 @@
             let titleInput = document.createElement("input");
             titleInput.type = "text";
             titleInput.value = contentBlockObject.title;
+            titleInput.addEventListener('input', (event) => {
+                setContentBlockPropertyFromField(contentBlockObject.id, "title", event.target.value);
+            });
 
             titleField.appendChild(titleLabel);
             titleField.appendChild(titleInput);
@@ -163,6 +218,9 @@
             descLabel.innerHTML = "Description";
             let descTA = document.createElement("textarea");
             descTA.innerHTML = contentBlockObject.content;
+            descTA.addEventListener('input', (event) => {
+                setContentBlockPropertyFromField(contentBlockObject.id, "content", event.target.value);
+            });
 
             descField.appendChild(descLabel);
             descField.appendChild(descTA);

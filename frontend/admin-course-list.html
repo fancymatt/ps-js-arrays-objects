@@ -24,69 +24,58 @@
         <div class="course-list">
             <ul id="course-list-root"></ul>
         </div> 
+
+        <template id="courseArticle">
+            <li>
+                <h2 id="courseTitle">Title</h2>
+                <a id="editCourseLink" href="#" class="button">Edit</a>
+            </li>
+        </template>
+
+        <template id="controlsButtons">
+            <li class="card-controls">
+                <button class="button" onclick="saveToDb()">Save Changes to DB</button>
+                <button class="button primary" onclick="saveToDb()">Create New Course</button>
+            </li>
+        </template>
+
     </body>
+
     <script src="shared.js"></script>
     <script>
-        let courseList = [];
-        let courseListRoot = document.getElementById("course-list-root");
+        const courseListRoot = document.getElementById("course-list-root");
 
-        let fetchCourses = async function() {
-            courseList = [];
-            fetch('http://localhost:8000/api/courses')
-                .then(response => response.json())
-                .then(json => {
-                    json.courses.forEach(course => {
-                        courseList.push(parseCourseJsonAsCourse(course));
+        const onLoadCourses = function() {
+            updateCourseListDisplay();
+        };
+
+        const fetchCourses = async function() {
+            if (courses == null) {
+                fetch('http://localhost:8000/api/courses')
+                    .then(response => response.json())
+                    .then(json => {
+                        parseCourseListJsonAsCourseList(json.courses);
+                        onLoadCourses();
                     });
-                    updateCourseListDisplay();
-                });
+            } else {
+                onLoadCourses();
+            }
         };
 
-        
-
-        let updateCourseListDisplay = function() {
+        const updateCourseListDisplay = function() {
             courseListRoot.innerHTML = '';
-            courseList.forEach(course => {
-                const li = document.createElement("li");
-                const h2 = document.createElement("h2");
-                h2.innerHTML = course.title;
-                li.appendChild(h2);
-                let studyBtn = document.createElement("a");
-                studyBtn.innerHTML = "Edit"
-                studyBtn.href = "admin-edit-course.html?id=" + course.id;
-                studyBtn.classList.add("button");
-                li.appendChild(studyBtn);
-                courseListRoot.appendChild(li);
+            courses.forEach(course => {
+                let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
+                courseArticle.getElementById("courseTitle").innerHTML = course.title;
+                courseArticle.getElementById("editCourseLink").href = "admin-edit-course.html?" + course.id;
+                courseListRoot.appendChild(courseArticle);
             });
-            appendAddCourseButton();
-            appendSaveDbButton();
+            
+            let controlsButtons = document.getElementById("controlsButtons").content.cloneNode(true);
+            courseListRoot.appendChild(controlsButtons);
         };
 
-        let appendAddCourseButton = function() {
-            const li = document.createElement("li");
-            let createBtn = document.createElement("button");
-            createBtn.innerHTML = "Create New Course";
-            createBtn.classList.add("button");
-            createBtn.addEventListener('click', () => {
-                createNewCourse();
-            });
-            li.appendChild(createBtn);
-            courseListRoot.appendChild(li);
-        };
-
-        let appendSaveDbButton = function() {
-            const li = document.createElement("li");
-            let createBtn = document.createElement("button");
-            createBtn.innerHTML = "Save Changes to DB";
-            createBtn.classList.add("button");
-            createBtn.addEventListener('click', () => {
-                saveToDb();
-            });
-            li.appendChild(createBtn);
-            courseListRoot.appendChild(li);
-        }
-
-        let createNewCourse = async function() {
+        const createNewCourse = async function() {
             fetch('http://localhost:8000/api/course', {
                 method: 'POST',
                 headers: {
@@ -101,7 +90,7 @@
             });
         };
 
-        let saveToDb = function() {
+        const saveToDb = function() {
             fetch('http://localhost:8000/api/save-db', {
                 method: 'POST'
             });

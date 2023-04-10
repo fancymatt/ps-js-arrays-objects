@@ -22,9 +22,7 @@
         </header>
         <div class="title"><h1>Globomantics Company Onboarding</h1></div>
         <div class="course-list">
-            <ul id="course-list-root">
-
-            </ul>
+            <ul id="course-list-root"></ul>
         </div> 
 
         <template id="courseArticle">
@@ -42,7 +40,7 @@
 
         const onLoadCourses = function() {
             updateCourseListDisplay();
-        }
+        };
 
         const fetchCourses = async function() {
             if (courses == null) {
@@ -61,7 +59,7 @@
             courses.forEach(course => {
                 let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
                 courseArticle.getElementById("courseTitle").innerHTML = course.title;
-                courseArticle.getElementById("studyCourseLink").href = "study.html?" + course.id;
+                courseArticle.getElementById("studyCourseLink").href = "study.html?id=" + course.id;
                 courseListRoot.appendChild(courseArticle);
             });
         };

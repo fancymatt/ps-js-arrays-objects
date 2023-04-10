@@ -27,9 +27,9 @@
                 <div class="card-description"><p id="content-block-content">Sample content goes here</p></div>
             </article>
             <div class="card-controls">
-                <button id="back-btn" class="button">Back</button>
-                <button id="bookmark-btn" class="button">Bookmark</button>
-                <button id="continue-btn" class="primary button">Acknowledge and Continue</button>
+                <button id="back-btn" class="button" onclick="goBack()">Back</button>
+                <button id="bookmark-btn" class="button" onclick="bookmark()">Bookmark</button>
+                <button id="continue-btn" class="primary button" onclick="goForward()"">Acknowledge and Continue</button>
             </div>
         </div> 
         <div class="progress">
@@ -41,19 +41,19 @@
         let currentCourse = null;
         let currentContentBlockIndex = 0;
         
-        document.getElementById("continue-btn").addEventListener('click', () => {
-            if (currentContentBlockIndex >= currentCourse.content.length - 1) return;
-            currentContentBlockIndex++;
-            updateCardDisplay();
-        });
-
-        document.getElementById("back-btn").addEventListener('click', () => {
+        const goBack = function() {
             if (currentContentBlockIndex <= 0) return;
             currentContentBlockIndex--;
             updateCardDisplay();
-        });
+        };
 
-        document.getElementById("bookmark-btn").addEventListener('click', () => {
+        const goForward = function() {
+            if (currentContentBlockIndex >= currentCourse.content.length - 1) return;
+            currentContentBlockIndex++;
+            updateCardDisplay();
+        };
+
+        const bookmark = function() {
             let currentContentBlock = currentCourse.content[currentContentBlockIndex];
             if (currentContentBlock.bookmarked) {
                 currentContentBlock.unbookmark();
@@ -61,9 +61,9 @@
                 currentContentBlock.bookmark()
             }
             updateCardDisplay();
-        });
+        };
 
-        let fetchCourse = async function() {
+        const fetchCourse = async function() {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
 
@@ -75,7 +75,7 @@
                 });
         };
 
-        let updateCardDisplay = function() {
+        const updateCardDisplay = function() {
             let currentContentBlock = currentCourse.content[currentContentBlockIndex];
             document.getElementById("content-block-title").innerHTML = currentContentBlock.title;
             document.getElementById("content-block-content").innerHTML = currentContentBlock.content;
@@ -89,33 +89,10 @@
             }
         };
 
-        let updateCourseDisplay = function() {
+        const updateCourseDisplay = function() {
             // only needs to be run one time
             // course title goes somewhere
             document.getElementById("total-blocks").innerHTML = contentBlocks.length;
-        }
-
-        let parseJSONAsContentBlockObjects = function(json) {
-            const outputArray = [];
-
-            const contentBlockPrototype = {
-                title: "no title defined",
-                content: "no content defined",
-                color: "white"
-            };
-
-            json.forEach(jsonContentBlock => {
-                let newContentBlock = Object.create(contentBlockPrototype);
-                
-                if (jsonContentBlock.color != "lightyellow") {
-                    delete jsonContentBlock.color;
-                }
-
-                Object.assign(newContentBlock, jsonContentBlock);
-                outputArray.push(newContentBlock);
-            });
-
-            return outputArray;
         }
 
         fetchCourse();

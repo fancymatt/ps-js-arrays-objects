@@ -223,6 +223,10 @@ a.button {
     text-align: center;
 }
 
+.course-list h2 {
+    align-self: center;
+}
+
 .course-list > ul {
     display: flex;
     flex-direction: column;

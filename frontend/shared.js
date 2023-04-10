@@ -2,14 +2,14 @@
 
 let courses = null;
 
-let parseCourseListJsonAsCourseList = function(jsonCoursesList) {
+const parseCourseListJsonAsCourseList = function(jsonCoursesList) {
     courses = [];
     jsonCoursesList.forEach(course => {
         courses.push(parseCourseJsonAsCourse(course));
     });
 };
 
-let parseCourseJsonAsCourse = function(jsonCourse) {
+const parseCourseJsonAsCourse = function(jsonCourse) {
     let coursePrototype = {
         title: "New course",
         author: "No author",
@@ -36,7 +36,7 @@ const parseJsonAsContentBlock = function(jsonBlock) {
         title: "no title",
         content: "no content",
         bookmarked: false,
-        bookmark: async function() {
+        bookmark: function() {
             this.bookmarked = true;
             fetch('http://localhost:8000/api/bookmark', {
                 method: 'POST',

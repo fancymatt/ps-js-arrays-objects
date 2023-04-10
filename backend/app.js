@@ -4,8 +4,12 @@ const fs = require("fs");
 
 const app = express();
 
-const courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
+let courses;
 const bookmarkedContentBlocks = [];
+
+const fetchCoursesFromJson = function() {
+    courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
+}
 
 const returnCourseForId = function(id) {
     let foundCourse = courses.find(course => course.id == id);
@@ -55,8 +59,14 @@ const returnSimpleCourseList = function() {
     });
 
     return responseArray;
-}
+};
 
+const saveCoursesToJson = function() {
+    const json = JSON.stringify(courses);
+    fs.writeFile('courses-update.json', json, 'utf8', fetchCoursesFromJson);
+};
+
+fetchCoursesFromJson();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -134,6 +144,10 @@ app.get("/api/notebook", (req, res, next) => {
     res.status(200).json({
         content: bookmarkedContentBlocks
     });
+});
+
+app.post("/api/save-db", (req, res, next) => {
+    saveCoursesToJson();
 });
 
 module.exports = app;

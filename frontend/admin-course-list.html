@@ -22,9 +22,7 @@
         </header>
         <div class="title"><h1>Admin</h1></div>
         <div class="course-list">
-            <ul id="course-list-root">
-
-            </ul>
+            <ul id="course-list-root"></ul>
         </div> 
     </body>
     <script>
@@ -69,6 +67,7 @@
                 courseListRoot.appendChild(li);
             });
             appendAddCourseButton();
+            appendSaveDbButton();
         };
 
         let appendAddCourseButton = function() {
@@ -83,6 +82,18 @@
             courseListRoot.appendChild(li);
         };
 
+        let appendSaveDbButton = function() {
+            const li = document.createElement("li");
+            let createBtn = document.createElement("button");
+            createBtn.innerHTML = "Save Changes to DB";
+            createBtn.classList.add("button");
+            createBtn.addEventListener('click', () => {
+                saveToDb();
+            });
+            li.appendChild(createBtn);
+            courseListRoot.appendChild(li);
+        }
+
         let createNewCourse = async function() {
             fetch('http://localhost:8000/api/course', {
                 method: 'POST',
@@ -95,6 +106,12 @@
                 if (response.status == "200") {
                     fetchCourses();
                 }
+            });
+        };
+
+        let saveToDb = function() {
+            fetch('http://localhost:8000/api/save-db', {
+                method: 'POST'
             });
         };
 

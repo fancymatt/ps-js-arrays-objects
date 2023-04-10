@@ -25,26 +25,42 @@
             <h2>Course Metadata</h2>
             <div class="course-metadata-form">
                 <div class="form-field">
-                    <label>Course Title</label>
-                    <input id="course-title" type="text" value="title">
+                    <label for="couseTitle">Course Title</label>
+                    <input id="courseTitle" type="text" value="title">
                 </div>
-                <div class="form-field">
-                    <label>Course ID</label>
-                    <input id="course-id" type="text" value="id">
+                <div>
+                    <p id="courseId">ID: ????</p>
                 </div>
             </div>
             <h2>Content Blocks</h2>
-            <div id="edit-course-form">
-
-            </div>
+            <div id="edit-course-form"></div>
         </div>
+
+        <template id="controlsButtons">
+            <div class="card-controls">
+                <button class="button primary" onclick="saveCourse()">Save Changes to DB</button>
+            </div>
+        </template>
+
+        <template id="contentBlockForm">
+            <div class="content-block-form">
+                <div class="form-field">
+                    <label for="cbTitle">Title</label>
+                    <input type="text" value="????" id="cbTitle">
+                </div>
+                <div class="form-field">
+                    <label for="cbDesc">Description</label>
+                    <textarea id="cbDesc">????</textarea>
+                </div>
+                <p id="cbId">ID: 2352352</p>
+            </div>
+        </template>
+
     </body>
+    
     <script src="shared.js"></script>
     <script>
         let editCourseForm = document.getElementById("edit-course-form");
-        let courseTitleField = document.getElementById("course-title");
-        let courseIdField = document.getElementById("course-id");
-        let contentBlocks = [];
         let currentCourse = null;
 
         let fetchCourse = async function() {
@@ -55,21 +71,9 @@
                 .then(response => response.json())
                 .then(json => {
                     currentCourse = parseCourseJsonAsCourse(json.course);
-                    updateCourseAdminDisplay();
+                    updateEditCourseForm();
                 });
         };
-
-        let appendSaveDbButton = function() {
-            const li = document.createElement("li");
-            let createBtn = document.createElement("button");
-            createBtn.innerHTML = "Save Changes to DB";
-            createBtn.classList.add("button");
-            createBtn.addEventListener('click', () => {
-                saveToDb();
-            });
-            li.appendChild(createBtn);
-            courseListRoot.appendChild(li);
-        }
 
         let saveCourse = async function() {
             // TODO: course id should not be changeable
@@ -84,30 +88,23 @@
                 .then(fetchCourse);
         };
 
-        let updateCourseAdminDisplay = function() {
+        let updateEditCourseForm = function() {
+            const courseTitleField = document.getElementById("courseTitle");
             courseTitleField.value = currentCourse.title;
             courseTitleField.addEventListener('input', (event) => {
                 currentCourse.title = event.target.value;
             });
 
-            courseIdField.value = currentCourse.id;
+            document.getElementById("courseId").innerHTML = "ID: " + currentCourse.id;
 
             editCourseForm.innerHTML = '';
             currentCourse.content.forEach(contentBlock => {
                 editCourseForm.appendChild(createElementForContentBlock(contentBlock));
             });
-            appendSaveCourseButton();
-        };
 
-        let appendSaveCourseButton = function() {
-            const createBtn = document.createElement("button");
-            createBtn.innerHTML = "Save Changes";
-            createBtn.classList.add("button");
-            createBtn.addEventListener('click', () => {
-                saveCourse();
-            });
-            editCourseForm.appendChild(createBtn);
-        }
+            const controlsButtons = document.getElementById("controlsButtons");
+            editCourseForm.appendChild(controlsButtons.content.cloneNode(true));
+        };
 
         const setContentBlockPropertyFromField = function(contentBlockId, property, value) {
             const foundContentBlock = currentCourse.content.find(contentBlock => contentBlock.id == contentBlockId);
@@ -116,52 +113,11 @@
         }
 
         const createElementForContentBlock = function(contentBlockObject) {
-            let form = document.createElement("div");
-            form.classList.add("content-block-form");
-
-            let titleField = document.createElement("div");
-            titleField.classList.add("form-field");
-            let titleLabel = document.createElement("label");
-            titleLabel.innerHTML = "Title";
-            let titleInput = document.createElement("input");
-            titleInput.type = "text";
-            titleInput.value = contentBlockObject.title;
-            titleInput.addEventListener('input', (event) => {
-                setContentBlockPropertyFromField(contentBlockObject.id, "title", event.target.value);
-            });
-
-            titleField.appendChild(titleLabel);
-            titleField.appendChild(titleInput);
-
-            let idField = document.createElement("div");
-            idField.classList.add("form-field");
-            let idLabel = document.createElement("label");
-            idLabel.innerHTML = "ID";
-            let idInput = document.createElement("input");
-            idInput.type = "text";
-            idInput.value = contentBlockObject.id;
-
-            idField.appendChild(idLabel);
-            idField.appendChild(idInput);
-
-            let descField = document.createElement("div");
-            descField.classList.add("form-field");
-            let descLabel = document.createElement("label");
-            descLabel.innerHTML = "Description";
-            let descTA = document.createElement("textarea");
-            descTA.innerHTML = contentBlockObject.content;
-            descTA.addEventListener('input', (event) => {
-                setContentBlockPropertyFromField(contentBlockObject.id, "content", event.target.value);
-            });
-
-            descField.appendChild(descLabel);
-            descField.appendChild(descTA);
-
-            form.appendChild(titleField);
-            form.appendChild(idField);
-            form.appendChild(descField);
-
-            return form;
+            let contentBlockFormElement = document.getElementById("contentBlockForm").content.cloneNode(true);
+            contentBlockFormElement.getElementById("cbId").innerHTML = "ID: " + contentBlockObject.id;
+            contentBlockFormElement.getElementById("cbTitle").value = contentBlockObject.title;
+            contentBlockFormElement.getElementById("cbDesc").innerHTML = contentBlockObject.content;
+            return contentBlockFormElement;
         };
 
         fetchCourse();

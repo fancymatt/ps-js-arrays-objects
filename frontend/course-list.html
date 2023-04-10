@@ -35,9 +35,22 @@
             fetch('http://localhost:8000/api/courses')
                 .then(response => response.json())
                 .then(json => {
-                    courseList = json.courses;
+                    json.courses.forEach(course => {
+                        courseList.push(parseCourseJsonAsCourse(course));
+                    })
                     updateCourseListDisplay();
                 });
+        };
+
+        let parseCourseJsonAsCourse = function(jsonCourse) {
+            let coursePrototype = {
+                title: "New course",
+                author: "No author",
+                id: "No id"
+            };
+            const newCourse = Object.create(coursePrototype);
+            Object.assign(newCourse, jsonCourse);
+            return newCourse;
         };
 
         let updateCourseListDisplay = function() {

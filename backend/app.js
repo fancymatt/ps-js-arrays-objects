@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
+const uuid = require('short-uuid');
 
 const app = express();
 
@@ -105,15 +106,16 @@ app.get("/api/course/:uid", (req, res, next) => {
 });
 
 app.post("/api/course", (req, res, next) => {
-    courses.push({});
+    courses.push({
+        id: uuid.generate()
+    });
+    saveCoursesToJson();
     res.status(200).json({
         message: "Empty course created successfully"
     });
 });
 
 app.post("/api/course/:uid", (req, res, next) => {
-    console.log("Request body");
-    console.log(req.body);
     updateCourseForId(req.params.uid, req.body);
     
     res.status(200).json({

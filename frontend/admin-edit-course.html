@@ -37,8 +37,9 @@
         </div>
 
         <template id="controlsButtons">
-            <div class="card-controls">
-                <button class="button primary" onclick="saveCourse()">Save Changes to DB</button>
+            <div class="small-card-controls">
+                <button class="button" onclick="saveCourse()">Save Changes to DB</button>
+                <button class="button primary" onclick="addCard()">Add Card</button>
             </div>
         </template>
 
@@ -90,6 +91,20 @@
                 body: JSON.stringify(currentCourse)
                 })
                 .then(fetchCourse);
+        };
+
+        const addCard = function() {
+            if (currentCourse.content == null) {
+                currentCourse.content = [];
+            }
+
+            fetch('http://localhost:8000/api/new-id')
+                .then(response => response.json())
+                .then(json => {
+                    currentCourse.content.push({ id: json.id });
+                    currentCourse = parseCourseJsonAsCourse(currentCourse);
+                    updateEditCourseForm();
+                });
         };
 
         const updateEditCourseForm = function() {

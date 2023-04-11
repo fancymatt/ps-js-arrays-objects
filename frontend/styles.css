@@ -200,6 +200,7 @@ a.button {
     display: flex;
     justify-content: end;
     margin-top: 1em;
+    gap: 1em;
 }
 
 .small-card-controls .button {

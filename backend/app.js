@@ -80,6 +80,12 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get("/api/new-id", (req, res, next) => {
+    res.status(200).json({
+        id: uuid.generate()
+    });
+});
+
 app.get("/api/courses", (req, res, next) => {
 
     res.status(200).json({
@@ -164,7 +170,6 @@ app.post("/api/save-db", (req, res, next) => {
     res.status(200).json({
         message: "Course updated successfully"
     });
-
     
 });
 

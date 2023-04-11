@@ -18,12 +18,16 @@ const returnCourseForId = function(id) {
 
     if (foundCourse.content != null && foundCourse.content.length > 0) {
         // update contentBlock objects based on bookmarked state
-    foundCourse.content.forEach(contentBlock => {
-        if (bookmarkedContentBlockIds.includes(contentBlock.id))
-            contentBlock.bookmarked = true;
-        else
-            contentBlock.bookmarked = false;
-    });
+        foundCourse.content.forEach(contentBlock => {
+            if (bookmarkedContentBlockIds.includes(contentBlock.id))
+                contentBlock.bookmarked = true;
+            else
+            {
+                if (contentBlock.hasOwnProperty('bookmarked'))
+                    delete contentBlock.bookmarked;
+            }
+                
+        });
     }
     
     return foundCourse;

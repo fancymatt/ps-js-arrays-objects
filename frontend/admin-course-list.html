@@ -96,7 +96,6 @@
         };
 
         const saveToDb = async function() {
-            // TODO: course id should not be changeable
             fetch('http://localhost:8000/api/save-db', {
                 method: 'POST',
                 headers: {
@@ -104,7 +103,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(courses)
-            })
+                })
                 .then(fetchCourses);
         };
 

@@ -1,0 +1,10 @@
+Globmantics Company Onboarding
+Sample software to be used with Arrays and Objects in JavaScript course on Pluralsight.com
+
+Created by Matt Henry <matt@henrymatt.com>
+
+Instructions to run locally
+1. In terminal, open backend directory
+2. `npm install` to install packages
+3. Type `node server` to run server
+4. Open `course-list.html` in a web browser

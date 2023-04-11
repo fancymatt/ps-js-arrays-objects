@@ -16,14 +16,16 @@ const returnCourseForId = function(id) {
     let foundCourse = courses.find(course => course.id == id);
     if (foundCourse == null) return null;
 
-    // update contentBlock objects based on bookmarked state
+    if (foundCourse.content != null && foundCourse.content.length > 0) {
+        // update contentBlock objects based on bookmarked state
     foundCourse.content.forEach(contentBlock => {
         if (bookmarkedContentBlockIds.includes(contentBlock.id))
             contentBlock.bookmarked = true;
         else
             contentBlock.bookmarked = false;
     });
-
+    }
+    
     return foundCourse;
 };
 

@@ -196,6 +196,27 @@ a.button {
     text-decoration: none;;
 }
 
+.small-card-controls {
+    display: flex;
+    justify-content: end;
+    margin-top: 1em;
+}
+
+.small-card-controls .button {
+    border-radius: 16px;
+    border-width: 0 0 4px;
+    box-sizing: border-box;
+    color: #000;
+    cursor: pointer;
+    display: inline-block;
+    font-family: sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    line-height: 1em;
+    padding: 1em 2em;
+}
+
 .progress {
     background: #acacac;
     border-radius: 2em;

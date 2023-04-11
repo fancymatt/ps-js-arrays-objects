@@ -54,16 +54,12 @@
         };
 
         const fetchCourses = async function() {
-            if (courses == null) {
-                fetch('http://localhost:8000/api/courses')
-                    .then(response => response.json())
-                    .then(json => {
-                        parseCourseListJsonAsCourseList(json.courses);
-                        onLoadCourses();
-                    });
-            } else {
-                onLoadCourses();
-            }
+            fetch('http://localhost:8000/api/courses')
+                .then(response => response.json())
+                .then(json => {
+                    parseCourseListJsonAsCourseList(json.courses);
+                    onLoadCourses();
+                });
         };
 
         const updateCourseListDisplay = function() {

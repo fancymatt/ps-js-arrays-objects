@@ -22,7 +22,29 @@
         </header>
         <div class="title"><h1>Student Notebook</h1></div>
         <div class="notebook" id="notebook"></div>
+
+        <template id="notebookEntry">
+            <article class="notebook-entry">
+                <div class="card-header">
+                    <h2 id="notebookCardTitle">title</h2>
+                </div>
+                <div class="card-description">
+                    <p id="notebookCardContent">content</p>
+                </div>
+                <div class="small-card-controls">
+                    <button class="button" id="notebookCardRemoveBtn">Remove</button>
+                </div>
+            </article>
+        </template>
+
+        <template id="emptyNotebook">
+            <article class="null-state">
+                <p>Your notebook is empty. Click 'Bookmark' while studying to add content to your notebook.</p>
+            </article>
+        </template>
+
     </body>
+
     <script src="shared.js"></script>
     <script>
         let notebookRoot = document.getElementById("notebook");
@@ -42,13 +64,8 @@
         };
 
         const displayEmptyNotebook = function() {
-            notebookRoot.innerHTML = "";
-            let article = document.createElement("article");
-            article.classList.add("null-state");
-            let emptyP = document.createElement("p");
-            emptyP.innerHTML = "Your notebook is empty. Click 'Bookmark' while studying to add content to your notebook."
-            article.appendChild(emptyP);
-            notebookRoot.appendChild(article);
+            const emptyNotebook = document.getElementById("emptyNotebook").content;
+            notebookRoot.appendChild(emptyNotebook);
         };
 
         const displayNotebook = function(jsonBlocks) {
@@ -63,41 +80,22 @@
                     appendNotebookEntryForContentBlock(contentBlock);
                 }
             });
-        }
+        };
 
         const appendNotebookEntryForContentBlock = function(contentBlock) {
-            let article = document.createElement("article");
-            article.classList.add("notebook-entry");
-            
-            let headerDiv = document.createElement("div");
-            headerDiv.classList.add("card-header");
-            let header = document.createElement("h2");
-            header.innerHTML = contentBlock.title;
-            headerDiv.appendChild(header);
-            article.appendChild(headerDiv);
-
-            let descriptionDiv = document.createElement("div");
-            descriptionDiv.classList.add("card-description");
-            let descriptionParagraph = document.createElement("p");
-            descriptionParagraph.innerHTML = contentBlock.content;
-            descriptionDiv.appendChild(descriptionParagraph);
-            article.appendChild(descriptionDiv);
-
-            let controlsDiv = document.createElement("div");
-            controlsDiv.classList.add("card-controls");
-            let removeBtn = document.createElement("button");
-            removeBtn.innerHTML = "Remove from Notebook"
-            removeBtn.classList.add("button");
-            removeBtn.addEventListener('click', () => {
-                let deleteIndex = notebookContentBlocks.findIndex(el => el.id == contentBlock.id);
+            const notebookEntry = document.getElementById("notebookEntry").content.cloneNode(true);
+            notebookEntry.getElementById("notebookCardTitle").innerHTML = contentBlock.title;
+            notebookEntry.getElementById("notebookCardContent").innerHTML = contentBlock.content;
+            notebookEntry.getElementById("notebookCardRemoveBtn").addEventListener('click', () => {
+                const deleteIndex = notebookContentBlocks.findIndex(el => el.id == contentBlock.id);
                 notebookContentBlocks.splice(deleteIndex, 1);
                 displayNotebook(notebookContentBlocks);
                 contentBlock.unbookmark();
+                if (notebookContentBlocks.length == 0) {
+                    displayEmptyNotebook();  
+                }
             });
-            controlsDiv.appendChild(removeBtn);
-            article.appendChild(controlsDiv);
-
-            notebookRoot.appendChild(article);
+            notebookRoot.appendChild(notebookEntry);
         };
 
         loadStudentNotebook();

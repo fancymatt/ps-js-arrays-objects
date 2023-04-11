@@ -20,7 +20,15 @@
                 </ul>
             </nav>
         </header>
-        <div class="title"><h1>Admin - Edit Course</h1></div>
+        <div class="title">
+            <h1>Globomantics Company Onboarding</h1>
+            <div class="breadcrumbs">
+                <ul>
+                    <li><a href="admin-course-list.html">Admin Course List</a></li>
+                    <li id="courseTitleBreadcrumbs">Course Title</li>
+                </ul>
+            </div>
+        </div>
         <div class="course-form">
             <h2>Course Metadata</h2>
             <div class="course-metadata-form">
@@ -108,7 +116,9 @@
         };
 
         const updateEditCourseForm = function() {
-            const courseTitleField = document.getElementById("courseTitle");
+            const courseTitleBreadcrumbs = document.getElementById("courseTitleBreadcrumbs");
+            courseTitleBreadcrumbs.innerHTML = currentCourse.title;
+            const courseTitleField = document.getElementById("courseTitle");            
             courseTitleField.value = currentCourse.title;
             courseTitleField.addEventListener('input', (event) => {
                 currentCourse.title = event.target.value;

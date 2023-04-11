@@ -20,7 +20,15 @@
                 </ul>
             </nav>
         </header>
-        <div class="title"><h1>Globomantics Company Onboarding</h1></div>
+        <div class="title">
+            <h1>Globomantics Company Onboarding</h1>
+            <div class="breadcrumbs">
+                <ul>
+                    <li><a href="course-list.html">Course List</a></li>
+                    <li id="courseTitle">Course Title</li>
+                </ul>
+            </div>
+        </div>
         <div class="content-block-card" id="card-body">
             <article>
                 <div class="card-header" id="card-header"><h2 id="content-block-title">Sample Title</h2></div>
@@ -71,6 +79,7 @@
                 .then(response => response.json())
                 .then(json => {
                     currentCourse = parseCourseJsonAsCourse(json.course);
+                    updateCourseDisplay();
                     updateCardDisplay();
                 });
         };
@@ -80,7 +89,6 @@
             document.getElementById("content-block-title").innerHTML = currentContentBlock.title;
             document.getElementById("content-block-content").innerHTML = currentContentBlock.content;
             document.getElementById("block-number").innerHTML = currentContentBlockIndex + 1;
-            document.getElementById("total-blocks").innerHTML = currentCourse.content.length;
 
             if (currentContentBlock.bookmarked) {
                 document.getElementById("bookmark-btn").innerHTML = "Unbookmark";
@@ -90,10 +98,9 @@
         };
 
         const updateCourseDisplay = function() {
-            // only needs to be run one time
-            // course title goes somewhere
-            document.getElementById("total-blocks").innerHTML = contentBlocks.length;
-        }
+            document.getElementById("total-blocks").innerHTML = currentCourse.content.length;
+            document.getElementById("courseTitle").innerHTML = currentCourse.title;
+        };
 
         fetchCourse();
     </script>

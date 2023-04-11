@@ -67,14 +67,49 @@ nav a {
 }
 
 .title {
+    display: flex;
     justify-self: center;
     grid-area: title;
+    flex-direction: column;
     padding: 2em;
+    align-items: center;
+}
+
+.title h1 {
+    display: block;
+    width: 100%;
+    text-align: center;
 }
 
 .navigation {
     width: 100%;
     display: grid;
+}
+
+.breadcrumbs {
+    padding: 0.5em;
+    border-radius: 0.5em;
+    margin-top: 1em;
+}
+
+.breadcrumbs a {
+    font-weight: bold;
+    text-decoration: none;
+    color: darkblue;
+}
+
+.breadcrumbs li {
+    display: inline;
+    font-family: "SF Pro Display", Arial, Helvetica, sans-serif;
+    
+}
+
+.breadcrumbs li:after {
+    content: " ⯈ ";
+}
+
+.breadcrumbs li:last-child:after {
+    content: none;
 }
 
 .content-block-card {

@@ -86,16 +86,20 @@
             const notebookEntry = document.getElementById("notebookEntry").content.cloneNode(true);
             notebookEntry.getElementById("notebookCardTitle").innerHTML = contentBlock.title;
             notebookEntry.getElementById("notebookCardContent").innerHTML = contentBlock.content;
-            notebookEntry.getElementById("notebookCardRemoveBtn").addEventListener('click', () => {
-                const deleteIndex = notebookContentBlocks.findIndex(el => el.id == contentBlock.id);
-                notebookContentBlocks.splice(deleteIndex, 1);
-                displayNotebook(notebookContentBlocks);
-                contentBlock.unbookmark();
-                if (notebookContentBlocks.length == 0) {
-                    displayEmptyNotebook();  
-                }
-            });
+            notebookEntry.getElementById("notebookCardRemoveBtn").addEventListener('click', removeBlockFromNotebook(contentBlock));
             notebookRoot.appendChild(notebookEntry);
+        };
+
+        const removeBlockFromNotebook = function(removedContentBlock) {
+            const deleteIndex = notebookContentBlocks.findIndex(el => el.id == removedContentBlock.id);
+            notebookContentBlocks.splice(deleteIndex, 1);
+            displayNotebook(notebookContentBlocks);
+
+            removedContentBlock.unbookmark();
+
+            if (notebookContentBlocks.length == 0) {
+                displayEmptyNotebook();  
+            }
         };
 
         loadStudentNotebook();

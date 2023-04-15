@@ -47,7 +47,7 @@
         <template id="controlsButtons">
             <div class="small-card-controls">
                 <button class="button" onclick="saveCourse()">Save Changes to DB</button>
-                <button class="button primary" onclick="addCard()">Add Card</button>
+                <button class="button primary" onclick="addCard()">Add New Block</button>
             </div>
         </template>
 
@@ -61,11 +61,15 @@
                     <label for="cbDesc">Description</label>
                     <textarea id="cbDesc">????</textarea>
                 </div>
+                <div class="form-field">
+                    <label for="cbColor">Color</label>
+                    <input type="text" value="????" id="cbColor">
+                </div>
                 <div>
                     <p id="cbId">ID: 2352352</p>
                 </div>
                 <div class="small-card-controls">
-                    <button class="button destructive" id="cbDelete">Delete</button>
+                    <button class="button destructive" id="cbDelete">Delete Block</button>
                 </div>
             </div>
         </template>
@@ -145,6 +149,7 @@
             const contentBlockFormElement = document.getElementById("contentBlockForm").content.cloneNode(true);
             const contentBlockTitleField = contentBlockFormElement.getElementById("cbTitle");
             const contentBlockDescField = contentBlockFormElement.getElementById("cbDesc");
+            const contentBlockColorField = contentBlockFormElement.getElementById("cbColor");
 
             contentBlockFormElement.getElementById("cbId").innerHTML = "ID: " + contentBlockObject.id;
 
@@ -157,9 +162,14 @@
             contentBlockDescField.addEventListener('input', (event) => {
                 setContentBlockPropertyFromField(contentBlockObject.id, "content", event.target.value);
             });
+
+            contentBlockColorField.value = contentBlockObject.color;
+            contentBlockColorField.addEventListener('input', (event) => {
+                setContentBlockPropertyFromField(contentBlockObject.id, "color", event.target.value);
+            });
             
             contentBlockFormElement.getElementById("cbDelete").addEventListener('click', () => {
-                let deleteIndex = currentCourse.content.findIndex(contentBlock => contentBlock.id == contentBlockObject.id);
+                const deleteIndex = currentCourse.content.findIndex(contentBlock => contentBlock.id == contentBlockObject.id);
                 currentCourse.content.splice(deleteIndex, 1);
                 updateEditCourseForm();
             });

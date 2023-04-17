@@ -35,6 +35,7 @@ const parseJsonAsContentBlock = function(jsonBlock) {
         id: "no id",
         title: "no title",
         content: "no content",
+        color: "white",
         bookmark: function() {
             this.bookmarked = true;
             fetch('http://localhost:8000/api/bookmark', {

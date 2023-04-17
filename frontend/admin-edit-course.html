@@ -33,8 +33,12 @@
             <h2>Course Metadata</h2>
             <div class="course-metadata-form">
                 <div class="form-field">
-                    <label for="couseTitle">Course Title</label>
+                    <label for="courseTitle">Course Title</label>
                     <input id="courseTitle" type="text" value="title">
+                </div>
+                <div class="form-field">
+                    <label for="courseAuthor">Author</label>
+                    <input id="courseAuthor" type="text" value="title">
                 </div>
                 <div>
                     <p id="courseId">ID: ????</p>
@@ -122,10 +126,17 @@
         const updateEditCourseForm = function() {
             const courseTitleBreadcrumbs = document.getElementById("courseTitleBreadcrumbs");
             courseTitleBreadcrumbs.innerHTML = currentCourse.title;
+            
             const courseTitleField = document.getElementById("courseTitle");            
             courseTitleField.value = currentCourse.title;
             courseTitleField.addEventListener('input', (event) => {
                 currentCourse.title = event.target.value;
+            });
+
+            const courseAuthorField = document.getElementById("courseAuthor");
+            courseAuthorField.value = currentCourse.author;
+            courseAuthorField.addEventListener('input', (event) => {
+                currentCourse.author = event.target.value;
             });
 
             document.getElementById("courseId").innerHTML = "ID: " + currentCourse.id;

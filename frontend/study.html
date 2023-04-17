@@ -85,13 +85,19 @@
         };
 
         const updateCardDisplay = function() {
-            let thisContentBlock = currentCourse.content[currentContentBlockIndex];
-            document.getElementById("content-block-title").innerHTML = thisContentBlock.title;
-            document.getElementById("content-block-content").innerHTML = thisContentBlock.content;
+            let contentBlock = currentCourse.content[currentContentBlockIndex];
+            document.getElementById("content-block-title").innerHTML = contentBlock.title;
+            document.getElementById("content-block-content").innerHTML = contentBlock.content;
             document.getElementById("block-number").innerHTML = currentContentBlockIndex + 1;
-            document.getElementById("card-body").style.backgroundColor = thisContentBlock.color;
 
-            if (thisContentBlock.bookmarked) {
+            
+            if (contentBlock.color != "lightyellow")
+                delete contentBlock.color;
+            
+
+            document.getElementById("card-body").style.backgroundColor = contentBlock.color;
+
+            if (contentBlock.bookmarked) {
                 document.getElementById("bookmark-btn").innerHTML = "Unbookmark";
             } else {
                 document.getElementById("bookmark-btn").innerHTML = "Bookmark";

@@ -47,37 +47,44 @@
 
     <script src="shared.js"></script>
     <script>
+        let courseListJson = [];
         const courseListRoot = document.getElementById("course-list-root");
-
-        const onLoadCourses = function() {
-            updateCourseListDisplay();
-        };
 
         const fetchCourses = async function() {
             fetch('http://localhost:8000/api/courses')
                 .then(response => response.json())
                 .then(json => {
-                    parseCourseListJsonAsCourseList(json.courses);
-                    onLoadCourses();
+                    courseListJson = json.courses;
+                    renderAdminCourseListForJsonCourses(courseListJson);
                 });
         };
 
-        const updateCourseListDisplay = function() {
-            courseListRoot.innerHTML = '';
-            courses.forEach(course => {
-                let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
-                courseArticle.getElementById("courseTitle").innerHTML = course.title;
-                courseArticle.getElementById("editCourseLink").href = "admin-edit-course.html?id=" + course.id;
-                courseArticle.getElementById("deleteCourseBtn").addEventListener('click', () => {
-                    let deleteIndex = courses.findIndex(dbCourse => dbCourse.id == course.id);
-                    courses.splice(deleteIndex, 1);
-                    onLoadCourses();
-                });
-                courseListRoot.appendChild(courseArticle);
-            });
+        const renderAdminCourseListForJsonCourses = function(jsonCourseList) {
+            courseListRoot.innerHTML = "";
+            jsonCourseList
+                .map(parseCourseJsonAsCourse)
+                .map(generateAdminCourseEntryHTMLForCourse)
+                .map(appendToAdminCourseListDOM);
             
             let controlsButtons = document.getElementById("controlsButtons").content.cloneNode(true);
             courseListRoot.appendChild(controlsButtons);
+        };
+
+        const generateAdminCourseEntryHTMLForCourse = function(courseJson) {
+            let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
+            courseArticle.getElementById("courseTitle").innerHTML = courseJson.title;
+            courseArticle.getElementById("editCourseLink").href = "admin-edit-course.html?id=" + courseJson.id;
+            courseArticle.getElementById("deleteCourseBtn").addEventListener('click', () => {
+                let deleteIndex = courseListJson.findIndex(dbCourse => dbCourse.id == courseJson.id);
+                courseListJson.splice(deleteIndex, 1);
+                saveToDb();
+                renderAdminCourseListForJsonCourses(courseListJson);
+            });
+            return courseArticle;
+        };
+
+        const appendToAdminCourseListDOM = function(courseEntryDocumentFragment) {
+            courseListRoot.appendChild(courseEntryDocumentFragment);
         };
 
         const createNewCourse = async function() {
@@ -102,9 +109,9 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(courses)
-                })
-                .then(fetchCourses);
+                body: JSON.stringify(courseListJson)
+            })
+            .then(fetchCourses);
         };
 
         fetchCourses();

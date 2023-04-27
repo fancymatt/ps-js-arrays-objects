@@ -46,19 +46,19 @@
     </body>
     <script src="shared.js"></script>
     <script>
-        let currentCourse = null;
+        let currentCourse;
         let currentContentBlockIndex = 0;
         
         const goBack = function() {
             if (currentContentBlockIndex <= 0) return;
             currentContentBlockIndex--;
-            updateCardDisplay();
+            renderCurrentBlock();
         };
 
         const goForward = function() {
             if (currentContentBlockIndex >= currentCourse.content.length - 1) return;
             currentContentBlockIndex++;
-            updateCardDisplay();
+            renderCurrentBlock();
         };
 
         const bookmark = function() {
@@ -68,43 +68,40 @@
             } else {
                 currentContentBlock.bookmark()
             }
-            updateCardDisplay();
+            renderCurrentBlock();
         };
 
         const fetchCourse = async function() {
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-
             fetch('http://localhost:8000/api/course/' + urlParams.get('id'))
                 .then(response => response.json())
                 .then(json => {
                     currentCourse = parseCourseJsonAsCourse(json.course);
-                    updateCourseDisplay();
-                    updateCardDisplay();
+                    renderCourse();
+                    renderCurrentBlock();
                 });
         };
 
-        const updateCardDisplay = function() {
+        const renderCurrentBlock = function() {
             let contentBlock = currentCourse.content[currentContentBlockIndex];
+
             document.getElementById("content-block-title").innerHTML = contentBlock.title;
             document.getElementById("content-block-content").innerHTML = contentBlock.content;
             document.getElementById("block-number").innerHTML = currentContentBlockIndex + 1;
-
             
             if (contentBlock.color != "lightyellow")
                 delete contentBlock.color;
             
-
             document.getElementById("card-body").style.backgroundColor = contentBlock.color;
 
-            if (contentBlock.bookmarked) {
+            if (contentBlock.bookmarked)
                 document.getElementById("bookmark-btn").innerHTML = "Unbookmark";
-            } else {
+            else
                 document.getElementById("bookmark-btn").innerHTML = "Bookmark";
-            }
         };
 
-        const updateCourseDisplay = function() {
+        const renderCourse = function() {
             document.getElementById("total-blocks").innerHTML = currentCourse.content.length;
             document.getElementById("courseTitle").innerHTML = currentCourse.title;
         };

@@ -48,22 +48,22 @@
     <script src="shared.js"></script>
     <script>
         let jsonContentBlocks = [];
-        let notebookRoot = document.getElementById("notebook");
+        const notebookRoot = document.getElementById("notebook");
 
-        const loadStudentNotebook = function() {
+        const fetchStudentNotebook = async function() {
             fetch('http://localhost:8000/api/notebook')
                 .then(response => response.json())
                 .then(json => {
                     jsonContentBlocks = json.content;
                     renderNotebookForJsonBlocks(jsonContentBlocks);
-                });
+             });
         };
 
         const renderNotebookForJsonBlocks = function(jsonBlocks) {
             notebookRoot.innerHTML = "";
             if (Array.isArray(jsonBlocks) && jsonBlocks.length > 0) {
                 jsonBlocks
-                    .map(parseJsonAsContentBlock)
+                    .map(parseContentBlockJsonAsContentBlock)
                     .filter(filterByBookmarked)
                     .sort(sortByTitleAlphabeticallyDescending)
                     .map(generateNotebookHTMLForContentBlock)
@@ -111,6 +111,6 @@
             renderNotebookForJsonBlocks(jsonContentBlocks);
         };
 
-        loadStudentNotebook();
+        fetchStudentNotebook();
     </script>
 </html>

@@ -36,32 +36,35 @@
 
     <script src="shared.js"></script>
     <script>
+        let jsonCourseList = [];
         const courseListRoot = document.getElementById("course-list-root");
 
-        const onLoadCourses = function() {
-            updateCourseListDisplay();
-        };
-
         const fetchCourses = async function() {
-            if (courses == null) {
-                fetch('http://localhost:8000/api/courses')
+            if (courses != null) return;
+            fetch('http://localhost:8000/api/courses')
                     .then(response => response.json())
                     .then(json => {
-                        parseCourseListJsonAsCourseList(json.courses);
-                        onLoadCourses();
-                    });
-            } else {
-                onLoadCourses();
-            }
+                        jsonCourseList = json.courses;
+                        renderCourseListForJsonCourses(jsonCourseList);
+                });
         };
 
-        const updateCourseListDisplay = function() {
-            courses.forEach(course => {
-                let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
-                courseArticle.getElementById("courseTitle").innerHTML = course.title;
-                courseArticle.getElementById("studyCourseLink").href = "study.html?id=" + course.id;
-                courseListRoot.appendChild(courseArticle);
-            });
+        const renderCourseListForJsonCourses = function(courseListJson) {
+            courseListJson
+                .map(parseCourseJsonAsCourse)
+                .map(generateCourseEntryHTMLForCourse)
+                .map(appendToCourseListDOM);
+        };
+
+        const appendToCourseListDOM = function(courseEntryDocumentFragment) {
+            courseListRoot.appendChild(courseEntryDocumentFragment);
+        };
+
+        const generateCourseEntryHTMLForCourse = function(courseJson) {
+            let courseArticle = document.getElementById("courseArticle").content.cloneNode(true);
+            courseArticle.getElementById("courseTitle").innerHTML = courseJson.title;
+            courseArticle.getElementById("studyCourseLink").href = "study.html?id=" + courseJson.id;
+            return courseArticle;
         };
 
         fetchCourses();

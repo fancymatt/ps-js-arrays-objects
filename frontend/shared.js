@@ -23,14 +23,14 @@ const parseCourseJsonAsCourse = function(jsonCourse) {
 
     if (jsonCourse.content != null && jsonCourse.content.length > 0) {
         jsonCourse.content.forEach(contentBlock => {
-            newCourse.content.push(parseJsonAsContentBlock(contentBlock));
+            newCourse.content.push(parseContentBlockJsonAsContentBlock(contentBlock));
         });
     }
     
     return newCourse;
 };
 
-const parseJsonAsContentBlock = function(jsonBlock) {
+const parseContentBlockJsonAsContentBlock = function(jsonBlock) {
     const contentBlockPrototype = {
         id: "no id",
         title: "no title",

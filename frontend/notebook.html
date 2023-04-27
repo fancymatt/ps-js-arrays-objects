@@ -47,59 +47,68 @@
 
     <script src="shared.js"></script>
     <script>
+        let jsonContentBlocks = [];
         let notebookRoot = document.getElementById("notebook");
-        let notebookContentBlocks = [];
 
         const loadStudentNotebook = function() {
-            notebookContentBlocks = [];
             fetch('http://localhost:8000/api/notebook')
                 .then(response => response.json())
                 .then(json => {
-                    if (json.content.length == 0) {
-                        displayEmptyNotebook();  
-                    } else {
-                        displayNotebook(json.content);
-                    }
+                    jsonContentBlocks = json.content;
+                    renderNotebookForJsonBlocks(jsonContentBlocks);
                 });
         };
 
-        const displayEmptyNotebook = function() {
-            const emptyNotebook = document.getElementById("emptyNotebook").content;
-            notebookRoot.appendChild(emptyNotebook);
-        };
-
-        const displayNotebook = function(jsonBlocks) {
-            notebookContentBlocks = [];
+        const renderNotebookForJsonBlocks = function(jsonBlocks) {
             notebookRoot.innerHTML = "";
-            jsonBlocks.forEach(jsonBlock => {
-                notebookContentBlocks.push(parseJsonAsContentBlock(jsonBlock));
-            });
-            
-            notebookContentBlocks.forEach(contentBlock => {
-                if (contentBlock.bookmarked) {
-                    appendNotebookEntryForContentBlock(contentBlock);
-                }
-            });
+            if (Array.isArray(jsonBlocks) && jsonBlocks.length > 0) {
+                jsonBlocks
+                    .map(parseJsonAsContentBlock)
+                    .filter(filterByBookmarked)
+                    .sort(sortByTitleAlphabeticallyDescending)
+                    .map(generateNotebookHTMLForContentBlock)
+                    .map(appendToNotebookDOM);
+            } else {
+                const emptyNotebook = document.getElementById("emptyNotebook").content;
+                notebookRoot.append(emptyNotebook);
+            }
         };
 
-        const appendNotebookEntryForContentBlock = function(contentBlock) {
+        const sortByDescriptionDescending = function(a, b) {
+            if (a.content.length < b.content.length) return 1;
+            if (b.content.length < a.content.length) return -1;
+            return 0;
+        };
+
+        const sortByTitleAlphabeticallyDescending = function(a, b) {
+            if (a.title > b.title) return 1;
+            if (b.title > a.title) return -1;
+            return 0;
+        };
+
+        const filterByBookmarked = function(block) {  
+            return block.bookmarked == true; 
+        };
+
+        const appendToNotebookDOM = function(cardDocumentFragment) {
+            notebookRoot.appendChild(cardDocumentFragment);
+        };
+
+        const generateNotebookHTMLForContentBlock = function(contentBlock) {
             const notebookEntry = document.getElementById("notebookEntry").content.cloneNode(true);
             notebookEntry.getElementById("notebookCardTitle").innerHTML = contentBlock.title;
             notebookEntry.getElementById("notebookCardContent").innerHTML = contentBlock.content;
-            notebookEntry.getElementById("notebookCardRemoveBtn").addEventListener('click', () => { removeBlockFromNotebook(contentBlock); });
-            notebookRoot.appendChild(notebookEntry);
+            notebookEntry.getElementById("notebookCardRemoveBtn").addEventListener('click', () => { 
+                removeBlockFromNotebook(contentBlock); 
+            });
+            return notebookEntry;
         };
 
         const removeBlockFromNotebook = function(removedContentBlock) {
-            const deleteIndex = notebookContentBlocks.findIndex(el => el.id == removedContentBlock.id);
-            notebookContentBlocks.splice(deleteIndex, 1);
-            displayNotebook(notebookContentBlocks);
-
+            const deleteIndex = jsonContentBlocks.findIndex(el => el.id == removedContentBlock.id);
+            jsonContentBlocks.splice(deleteIndex, 1);
             removedContentBlock.unbookmark();
-
-            if (notebookContentBlocks.length == 0) {
-                displayEmptyNotebook();  
-            }
+            renderNotebookForJsonBlocks(jsonContentBlocks);
         };
 
         loadStudentNotebook();

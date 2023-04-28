@@ -10,14 +10,13 @@ const bookmarkedContentBlockIds = [];
 
 const fetchCoursesFromJson = function() {
     courses = JSON.parse(fs.readFileSync('./courses.json', 'utf8'));
-}
+};
 
 const returnCourseForId = function(id) {
     let foundCourse = courses.find(course => course.id == id);
     if (foundCourse == null) return null;
 
     if (foundCourse.content != null && foundCourse.content.length > 0) {
-        // update contentBlock objects based on bookmarked state
         foundCourse.content.forEach(contentBlock => {
             if (bookmarkedContentBlockIds.includes(contentBlock.id))
                 contentBlock.bookmarked = true;
@@ -25,11 +24,9 @@ const returnCourseForId = function(id) {
             {
                 if (contentBlock.hasOwnProperty('bookmarked'))
                     delete contentBlock.bookmarked;
-            }
-                
+            } 
         });
     }
-    
     return foundCourse;
 };
 
@@ -38,32 +35,29 @@ const updateCourseForId = function(id, course) {
     courses[foundCourseIndex] = {};
     Object.assign(courses[foundCourseIndex], course);
     saveCoursesToJson();
-}
+};
 
 const returnBookmarkedContentBlocks = function() {
     const responseArray = [];
-
     bookmarkedContentBlockIds.forEach(id => {
-        let bookmarkedContentBlock = findContentBlockWithId(id);
-        bookmarkedContentBlock.bookmarked = true;
-        responseArray.push(bookmarkedContentBlock);
+        let foundBlock = findContentBlockWithId(id);
+        foundBlock.bookmarked = true;
+        responseArray.push(foundBlock);
     });
-
     return responseArray;
 };
 
-const findContentBlockWithId = function(id) {
-    let foundContentBlock = null;
+const allContentBlocks = function() {
+    let contentBlocks = [];
     courses.forEach(course => {
-        if (course.content != null && course.content.length > 0) {
-            course.content.forEach(contentBlock => {
-                if (contentBlock.id == id) {
-                    foundContentBlock = contentBlock;
-                }
-            });
-        } 
+        contentBlocks.push(...course.content);
     });
-    return foundContentBlock;
+    return contentBlocks;
+};
+
+const findContentBlockWithId = function(id) {
+    const allBlocks = allContentBlocks();
+    return allBlocks.find(block => block.id == id);
 };
 
 const saveCoursesToJson = function() {
@@ -91,7 +85,6 @@ app.get("/api/new-id", (req, res, next) => {
 });
 
 app.get("/api/courses", (req, res, next) => {
-
     res.status(200).json({
         message: "Courses fetched successfully",
         courses: courses
